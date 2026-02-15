@@ -7,6 +7,7 @@ Example source documents for testing the deck-generator skill.
 - `q4_strategy_brief.md` - Strategic review document with narrative
 - `market_data.csv` - Quarterly performance data
 - `competitor_analysis.pdf` - Competitor comparison (placeholder)
+- `why-schools-need-decks-example.pdf` - Exported sample deck generated from `source_docs/article.md`
 
 ## Usage
 
