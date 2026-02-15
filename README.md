@@ -60,6 +60,47 @@ Theme resolution order:
 2. `assets/themes-local/<theme-name>/`
 3. fallback to `assets/themes/consulting/`
 
+### Create a Local Theme (Recommended)
+
+Use the helper script to scaffold a local theme quickly:
+
+```bash
+python scripts/create_local_theme.py \
+  --theme-name my-brand \
+  --primary '#0B2A4A' \
+  --secondary '#5B7C99' \
+  --accent '#D48A27'
+```
+
+This creates:
+
+```text
+assets/themes-local/my-brand/theme.css
+assets/themes-local/my-brand/uno.config.ts
+```
+
+Then run the skill and choose **Local theme by name** with `my-brand`.
+
+### Manual Local Theme Format
+
+If you prefer manual setup, create these files directly:
+
+```text
+assets/themes-local/<theme-name>/theme.css
+assets/themes-local/<theme-name>/uno.config.ts
+```
+
+At minimum, define these CSS variables in `theme.css`:
+- `--slide-primary`
+- `--slide-secondary`
+- `--slide-accent`
+- `--slide-background`
+- `--slide-text`
+
+Important:
+- `assets/themes-local/*` is git-ignored (except docs placeholders), so private themes stay local.
+- If a local theme is missing required files, the skill falls back to `consulting`.
+
 ## Directory Structure
 
 ```

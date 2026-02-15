@@ -35,6 +35,10 @@ Ask user via AskUserQuestion:
    - Options: "Consulting (default)", "Local theme by name", "Custom (specify colors)"
    - header: "Theme"
 
+   If user chooses "Local theme by name", ask:
+   - "Enter local theme name (folder name under assets/themes-local/)"
+   - header: "Local Theme"
+
 3. **Colors** (if custom): "Specify primary and secondary colors"
    - Options: "Primary hex color", "Secondary hex color"
    - header: "Colors"
@@ -353,6 +357,16 @@ Resolution order when a theme is requested:
 3. fallback to `assets/themes/consulting/`
 
 `assets/themes-local/*` is git-ignored (except the placeholder docs), so private themes can be used locally without being pushed.
+
+Quick scaffold command:
+
+```bash
+python scripts/create_local_theme.py \
+  --theme-name my-brand \
+  --primary '#003366' \
+  --secondary '#6699CC' \
+  --accent '#FF6B35'
+```
 
 ## Recent Improvements
 

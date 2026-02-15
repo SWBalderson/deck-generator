@@ -2,6 +2,16 @@
 
 Place local-only themes in this directory.
 
+Quick start:
+
+```bash
+python scripts/create_local_theme.py \
+  --theme-name my-brand \
+  --primary '#003366' \
+  --secondary '#6699CC' \
+  --accent '#FF6B35'
+```
+
 Each theme should follow:
 
 ```
@@ -15,3 +25,4 @@ Notes:
   1) `assets/themes/<theme-name>` (shared)
   2) `assets/themes-local/<theme-name>` (local/private)
 - If a requested theme is not found, it falls back to `consulting`.
+- To overwrite an existing local theme scaffold, run with `--force`.
