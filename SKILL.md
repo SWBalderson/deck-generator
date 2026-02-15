@@ -32,7 +32,7 @@ Ask user via AskUserQuestion:
    - header: "Project Name"
 
 2. **Theme**: "Which theme would you like to use?"
-   - Options: "Consulting (default)", "Custom (specify colors)"
+   - Options: "Consulting (default)", "Local theme by name", "Custom (specify colors)"
    - header: "Theme"
 
 3. **Colors** (if custom): "Specify primary and secondary colors"
@@ -316,6 +316,7 @@ npm install -D playwright-chromium
 ### Available Themes
 
 - **Consulting** (default) - Professional navy/blue corporate theme
+- **Local themes** (optional) - private themes loaded from `assets/themes-local/<theme-name>/`
 
 ### Creating Custom Themes
 
@@ -330,10 +331,28 @@ To create a theme for an organisation:
    - Font preferences (optional)
 
 2. Skill generates:
-   - `assets/themes/{theme-name}/theme.css`
-   - `assets/themes/{theme-name}/uno.config.ts`
-   - Theme documentation in README.md
-   - Theme can be reused for future presentations
+    - `assets/themes/{theme-name}/theme.css`
+    - `assets/themes/{theme-name}/uno.config.ts`
+    - Theme documentation in README.md
+    - Theme can be reused for future presentations
+
+### Local-Only Themes (Private)
+
+Use local-only themes when you want private branding while keeping the shared skill repository generic.
+
+Directory structure:
+
+```text
+assets/themes-local/<theme-name>/theme.css
+assets/themes-local/<theme-name>/uno.config.ts
+```
+
+Resolution order when a theme is requested:
+1. `assets/themes/<theme-name>/`
+2. `assets/themes-local/<theme-name>/`
+3. fallback to `assets/themes/consulting/`
+
+`assets/themes-local/*` is git-ignored (except the placeholder docs), so private themes can be used locally without being pushed.
 
 ## Recent Improvements
 

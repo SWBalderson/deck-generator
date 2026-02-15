@@ -12,6 +12,24 @@ from pathlib import Path
 from typing import Optional
 
 
+def resolve_theme_dir(skill_dir: Path, theme: str) -> Path:
+    """Resolve theme directory from shared or local theme folders."""
+    shared = skill_dir / 'assets' / 'themes' / theme
+    if shared.exists():
+        return shared
+
+    local = skill_dir / 'assets' / 'themes-local' / theme
+    if local.exists():
+        return local
+
+    fallback = skill_dir / 'assets' / 'themes' / 'consulting'
+    print(
+        f"⚠ Theme '{theme}' not found in assets/themes or assets/themes-local. "
+        "Falling back to 'consulting'."
+    )
+    return fallback
+
+
 def create_project(output_dir: Path, theme: str, colors: dict, logo: Optional[str] = None):
     """Create Slidev project structure."""
     
@@ -45,11 +63,10 @@ def create_project(output_dir: Path, theme: str, colors: dict, logo: Optional[st
     
     # Copy theme files
     skill_dir = Path(__file__).parent.parent
-    theme_dir = skill_dir / 'assets' / 'themes' / theme
-    
-    if theme_dir.exists():
-        shutil.copy(theme_dir / 'theme.css', output_dir / 'styles' / 'theme.css')
-        shutil.copy(theme_dir / 'uno.config.ts', output_dir / 'uno.config.ts')
+    theme_dir = resolve_theme_dir(skill_dir, theme)
+
+    shutil.copy(theme_dir / 'theme.css', output_dir / 'styles' / 'theme.css')
+    shutil.copy(theme_dir / 'uno.config.ts', output_dir / 'uno.config.ts')
     
     # Copy layouts and components
     layouts_dir = skill_dir / 'assets' / 'layouts'

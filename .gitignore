@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+assets/themes-local/*
+!assets/themes-local/.gitkeep
+!assets/themes-local/README.md

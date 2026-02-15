@@ -42,11 +42,23 @@ npm install -D playwright-chromium
 
 Default theme: Professional consulting (navy #003366, light blue #6699CC)
 
-Create custom themes for schools/firms:
+Create custom themes for organisations/firms:
 - Colors auto-applied to all charts
 - Logo appears on every slide
 - Fonts customizable
 - CSS variables for easy overrides
+
+For local/private themes that should not be pushed to GitHub, use:
+
+```text
+assets/themes-local/<theme-name>/theme.css
+assets/themes-local/<theme-name>/uno.config.ts
+```
+
+Theme resolution order:
+1. `assets/themes/<theme-name>/`
+2. `assets/themes-local/<theme-name>/`
+3. fallback to `assets/themes/consulting/`
 
 ## Directory Structure
 

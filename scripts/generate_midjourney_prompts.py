@@ -5,6 +5,7 @@ Generate contextual MidJourney prompts based on slide content analysis.
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -138,9 +139,38 @@ def get_theme_colors(theme: str) -> dict:
             'accent': '#FF6B35 (Coral)'
         }
     }
-    
+
+    if theme in themes:
+        return themes[theme]
+
+    # Try loading colors from shared/local theme.css for custom themes
+    script_dir = Path(__file__).resolve().parent
+    skill_dir = script_dir.parent
+    candidates = [
+        skill_dir / 'assets' / 'themes' / theme / 'theme.css',
+        skill_dir / 'assets' / 'themes-local' / theme / 'theme.css',
+    ]
+
+    for css_path in candidates:
+        if not css_path.exists():
+            continue
+        css = css_path.read_text(encoding='utf-8')
+
+        def extract(var_name: str, fallback: str) -> str:
+            match = re.search(rf"{re.escape(var_name)}\s*:\s*(#[0-9a-fA-F]{{6}})", css)
+            return match.group(1) if match else fallback
+
+        primary = extract('--slide-primary', '#003366')
+        secondary = extract('--slide-secondary', '#6699CC')
+        accent = extract('--slide-accent', '#FF6B35')
+        return {
+            'primary': f'{primary} (Primary)',
+            'secondary': f'{secondary} (Secondary)',
+            'accent': f'{accent} (Accent)'
+        }
+
     # Default to consulting if theme not found
-    return themes.get(theme, themes['consulting'])
+    return themes['consulting']
 
 
 def generate_prompts_for_slide(slide: dict, slide_num: int, theme_colors: dict) -> list:
