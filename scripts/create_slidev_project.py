@@ -15,11 +15,11 @@ from typing import Optional
 def resolve_theme_dir(skill_dir: Path, theme: str) -> Path:
     """Resolve theme directory from shared or local theme folders."""
     shared = skill_dir / 'assets' / 'themes' / theme
-    if shared.exists():
+    if (shared / 'theme.css').exists() and (shared / 'uno.config.ts').exists():
         return shared
 
     local = skill_dir / 'assets' / 'themes-local' / theme
-    if local.exists():
+    if (local / 'theme.css').exists() and (local / 'uno.config.ts').exists():
         return local
 
     fallback = skill_dir / 'assets' / 'themes' / 'consulting'
