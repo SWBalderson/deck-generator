@@ -1,0 +1,172 @@
+---
+theme: none
+layout: DeckTitle
+fonts:
+  sans: {{ font_sans | default('Inter') }}
+  serif: {{ font_serif | default('Georgia') }}
+title: {{ title }}
+background: '{{ background | default('#FFFFFF') }}'
+---
+
+{% for slide in slides %}
+{%- if loop.first %}
+
+{{ slide.title }}
+
+{% if slide.subtitle %}
+<template #subtitle>
+{{ slide.subtitle }}
+</template>
+{% endif %}
+
+{% if author %}
+<template #author>
+{{ author }}
+</template>
+{% endif %}
+
+{%- elif slide.layout == 'title' %}
+---
+layout: DeckTitle
+---
+
+{{ slide.title }}
+
+{% if slide.subtitle %}
+<template #subtitle>
+{{ slide.subtitle }}
+</template>
+{% endif %}
+
+{% if author %}
+<template #author>
+{{ author }}
+</template>
+{% endif %}
+
+{%- elif slide.layout == 'section' %}
+---
+layout: DeckSection
+---
+
+# {{ slide.title }}
+
+{% if slide.subtitle %}
+## {{ slide.subtitle }}
+{% endif %}
+
+{%- elif slide.layout == 'chart-full' %}
+---
+layout: DeckChartFull
+---
+
+<template #title>
+{{ slide.title }}
+</template>
+
+<template #chart>
+<DeckChart type="{{ slide.visual.chart_type }}" data="/data/{{ slide.visual.data_file }}" />
+</template>
+
+<template #source>
+{{ slide.source }}
+</template>
+
+{%- elif slide.layout == 'two-col' %}
+---
+layout: DeckTwoCol
+---
+
+<template #title>
+{{ slide.title }}
+</template>
+
+<template #left>
+{% for point in slide.bullets %}
+**{{ point.main }}**{% if point.detail %} — {{ point.detail }}{% endif %}
+
+{% endfor %}
+</template>
+
+<template #right>
+{%- if slide.visual.type == 'image' %}
+<img src="/images/{{ slide.visual.filename }}" />
+{%- elif slide.visual.type == 'chart' %}
+<DeckChart type="{{ slide.visual.chart_type }}" data="/data/{{ slide.visual.data_file }}" />
+{%- endif %}
+</template>
+
+{%- else %}
+---
+layout: DeckContent
+---
+
+<DeckActionTitle>{{ slide.title }}</DeckActionTitle>
+
+<div class="slide-grid">
+<div class="slide-text-col">
+{%- for point in slide.bullets %}
+<p><strong>{{ point.main }}</strong>{%- if point.detail %} — {{ point.detail }}{% endif %}</p>
+{%- endfor %}
+</div>
+{%- if slide.visual.type != 'none' %}
+<div class="slide-visual-col">
+{%- if slide.visual.type == 'image' %}
+<img src="/images/{{ slide.visual.filename }}" />
+{%- elif slide.visual.type == 'chart' %}
+<DeckChart type="{{ slide.visual.chart_type }}" data="/data/{{ slide.visual.data_file }}" />
+{%- endif %}
+</div>
+{%- endif %}
+</div>
+
+{% if slide.source %}
+<DeckSource>{{ slide.source }}</DeckSource>
+{% endif %}
+
+{%- endif %}
+{%- endfor %}
+
+---
+layout: DeckEnd
+---
+
+Questions?
+
+<style>
+.slide-logo {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  height: 2.5rem;
+  width: auto;
+  z-index: 10;
+}
+
+.slide-title {
+  font-family: Georgia, serif;
+  font-size: 1.75rem;
+  color: #003366;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.slide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.slide-text-col {
+  padding-right: 1rem;
+}
+
+.slide-visual-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
