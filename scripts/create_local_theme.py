@@ -5,6 +5,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 HEX_COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -20,16 +21,54 @@ def validate_hex(label: str, value: str) -> None:
         raise ValueError(f"{label} must be a 6-digit hex value like #003366")
 
 
+def prompt_text(label: str, default: Optional[str] = None) -> str:
+    while True:
+        suffix = f" [{default}]" if default else ""
+        value = input(f"{label}{suffix}: ").strip()
+        if value:
+            return value
+        if default is not None:
+            return default
+
+
+def prompt_hex(label: str, default: str) -> str:
+    while True:
+        value = prompt_text(label, default)
+        try:
+            validate_hex(label, value)
+            return value
+        except ValueError as exc:
+            print(f"✗ {exc}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a local deck-generator theme")
-    parser.add_argument("--theme-name", required=True, help="Theme name (for example: my-brand)")
-    parser.add_argument("--primary", required=True, help="Primary colour hex (for example: #003366)")
-    parser.add_argument("--secondary", required=True, help="Secondary colour hex (for example: #6699CC)")
-    parser.add_argument("--accent", required=True, help="Accent colour hex (for example: #FF6B35)")
+    parser.add_argument("--theme-name", help="Theme name (for example: my-brand)")
+    parser.add_argument("--primary", help="Primary colour hex (for example: #003366)")
+    parser.add_argument("--secondary", help="Secondary colour hex (for example: #6699CC)")
+    parser.add_argument("--accent", help="Accent colour hex (for example: #FF6B35)")
     parser.add_argument("--background", default="#FFFFFF", help="Background colour hex")
     parser.add_argument("--text", default="#1F2937", help="Body text colour hex")
     parser.add_argument("--force", action="store_true", help="Overwrite if theme already exists")
     args = parser.parse_args()
+
+    interactive = not all([args.theme_name, args.primary, args.secondary, args.accent])
+    if interactive and not sys.stdin.isatty():
+        print(
+            "✗ Missing required arguments. Provide --theme-name, --primary, --secondary, and --accent "
+            "or run interactively in a terminal.",
+            file=sys.stderr,
+        )
+        return 1
+
+    if interactive:
+        print("Create local theme (private, not pushed to git)")
+        args.theme_name = args.theme_name or prompt_text("Theme name", "my-brand")
+        args.primary = args.primary or prompt_hex("Primary (#RRGGBB)", "#003366")
+        args.secondary = args.secondary or prompt_hex("Secondary (#RRGGBB)", "#6699CC")
+        args.accent = args.accent or prompt_hex("Accent (#RRGGBB)", "#FF6B35")
+        args.background = prompt_hex("Background (#RRGGBB)", args.background)
+        args.text = prompt_hex("Body text (#RRGGBB)", args.text)
 
     theme_name = slugify(args.theme_name)
     if not theme_name:
@@ -50,9 +89,14 @@ def main() -> int:
     theme_dir = skill_dir / "assets" / "themes-local" / theme_name
 
     if theme_dir.exists() and not args.force:
-        print(f"✗ Theme already exists: {theme_dir}", file=sys.stderr)
-        print("  Use --force to overwrite.", file=sys.stderr)
-        return 1
+        if interactive:
+            overwrite = prompt_text("Theme exists. Overwrite? (y/N)", "N").lower()
+            if overwrite in {"y", "yes"}:
+                args.force = True
+        if not args.force:
+            print(f"✗ Theme already exists: {theme_dir}", file=sys.stderr)
+            print("  Use --force to overwrite.", file=sys.stderr)
+            return 1
 
     theme_dir.mkdir(parents=True, exist_ok=True)
 

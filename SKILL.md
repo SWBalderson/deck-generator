@@ -361,12 +361,10 @@ Resolution order when a theme is requested:
 Quick scaffold command:
 
 ```bash
-python scripts/create_local_theme.py \
-  --theme-name my-brand \
-  --primary '#003366' \
-  --secondary '#6699CC' \
-  --accent '#FF6B35'
+python scripts/create_local_theme.py
 ```
+
+Non-interactive mode is also supported with flags for automation.
 
 ## Recent Improvements
 

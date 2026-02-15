@@ -62,7 +62,13 @@ Theme resolution order:
 
 ### Create a Local Theme (Recommended)
 
-Use the helper script to scaffold a local theme quickly:
+Use the helper script to scaffold a local theme quickly (interactive wizard):
+
+```bash
+python scripts/create_local_theme.py
+```
+
+Or non-interactively:
 
 ```bash
 python scripts/create_local_theme.py \
