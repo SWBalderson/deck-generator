@@ -49,6 +49,13 @@ Create custom themes for organisations/firms:
 - Fonts customizable
 - CSS variables for easy overrides
 
+For custom colour overrides, pass JSON to both project scaffolding and chart generation:
+
+```bash
+python scripts/create_slidev_project.py --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}' --output my-deck
+python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --output my-deck/public/data --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}'
+```
+
 For local/private themes that should not be pushed to GitHub, use:
 
 ```text

@@ -36,7 +36,7 @@ Status: Active
 - [x] **P1.2 Docs/workflow consistency**
   - Update `SKILL.md` and `README.md` to remove contradictory git-init sequencing.
   - Keep one canonical workflow order.
-- [ ] **P1.3 Colour propagation**
+- [x] **P1.3 Colour propagation**
   - Wire `--colors` through project creation and chart generation.
   - Ensure theme CSS and chart palettes use selected colours.
 - [ ] **P1.4 Logo fallback paths**
@@ -178,10 +178,12 @@ Use this format:
 - 2026-02-17 - Plan created - Initial roadmap baseline established.
 - 2026-02-17 - (pending commit) - Completed P1.1 chart contract fix and added chart fixtures - Renderer now supports both data-only and full Chart.js config JSON.
 - 2026-02-17 - (pending commit) - Completed P1.2 docs/workflow consistency - SKILL and README now match project creation + git initialisation behaviour.
+- 2026-02-17 - (pending commit) - Completed P1.3 colour propagation - `--colors` now applies to copied theme files and chart generation palettes.
 
 ---
 
 ## Current next actions
 
 - [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
-- [ ] Continue **P1.4 Logo fallback paths** in `assets/components/DeckLogo.vue`.
+- [ ] Start **P1.4 Logo fallback paths** in `assets/components/DeckLogo.vue`.
+- [ ] Begin Phase 1 acceptance checks after P1.4 is complete.

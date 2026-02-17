@@ -5,6 +5,7 @@ Generate Chart.js configurations from data.
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -154,7 +155,13 @@ def main():
     parser.add_argument('--types', required=True, help='Path to chart-types.json')
     parser.add_argument('--output', required=True, help='Output directory for chart configs')
     parser.add_argument('--theme', default='consulting', help='Theme name')
+    parser.add_argument('--colors', help='Optional JSON colour overrides')
     args = parser.parse_args()
+
+    hex_re = re.compile(r'^#[0-9A-Fa-f]{6}$')
+
+    def valid_color(value):
+        return isinstance(value, str) and bool(hex_re.match(value.strip()))
     
     # Load theme colors
     themes = {
@@ -165,7 +172,15 @@ def main():
             'grid': '#E5E5E5'
         }
     }
-    colors = themes.get(args.theme, themes['consulting'])
+    colors = dict(themes.get(args.theme, themes['consulting']))
+    if args.colors:
+        try:
+            overrides = json.loads(args.colors)
+            for key in ['primary', 'secondary', 'accent', 'grid']:
+                if valid_color(overrides.get(key)):
+                    colors[key] = overrides[key].strip().upper()
+        except json.JSONDecodeError:
+            print('⚠ Invalid --colors JSON. Using theme defaults.')
     
     # Load analysis and chart types
     with open(args.analysis, 'r', encoding='utf-8') as f:
@@ -215,6 +230,9 @@ def main():
                 labels=['Product A', 'Product B', 'Product C', 'Product D', 'Other'],
                 colors=colors
             )
+        else:
+            print(f"⚠ Unsupported chart type '{chart_type}' for {slide_id}; skipping")
+            continue
         
         # Save config
         output_file = output_dir / f"chart_{i+1}.json"
