@@ -215,6 +215,23 @@ Optional quality checks:
 - Add `--consulting-lint --content .temp/content.json` for scored consulting-quality checks
 - Add `--consulting-lint --consulting-lint-strict --consulting-lint-threshold 70` to enforce quality gate
 
+Consulting-quality report output:
+- Build command writes `consulting-quality-report.json` next to `slides.md`
+- Report includes: `overall_score`, `overall_band`, `category_scores`, `blocking_issues`, `warnings`, `slide_findings`, `recommended_fixes`
+
+Consulting-quality score model (100 points):
+- `action_titles`: 25
+- `pyramid`: 20
+- `mece`: 20
+- `minimalist`: 15
+- `data_evidence`: 20
+
+Severity bands:
+- `90-100`: Excellent
+- `75-89`: Good
+- `60-74`: Needs refinement
+- `<60`: Rework recommended
+
 Generates complete slides.md with:
 - All slide content
 - Chart component references
@@ -243,6 +260,17 @@ Run:
 `python scripts/generate_citation_trace.py --analysis .temp/analysis.json --content .temp/content.json --output [deck_dir]/citation-trace.json`
 
 This produces per-bullet source excerpt matches to improve evidence traceability.
+
+### Step 9d: Run Consulting Quality Linter Directly (Optional)
+
+Run:
+`python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --report-out [deck_dir]/consulting-quality-report.json`
+
+Strict gate:
+`python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --strict --threshold 70`
+
+Optional traceability input:
+- Add `--citation-trace [deck_dir]/citation-trace.json` to factor citation matching into data/evidence scoring.
 
 ### Step 10: Export
 
@@ -478,3 +506,14 @@ Run full non-LLM smoke flow for regression checks:
 ```bash
 ./scripts/smoke_test.sh
 ```
+
+### Fixture + Quality Regression (Maintainer)
+
+Run fast fixture checks, including strict consulting-quality gate:
+
+```bash
+python scripts/run_fixture_checks.py
+```
+
+CI enforcement:
+- `.github/workflows/ci.yml` runs compile checks, fixture checks, and smoke pipeline on push/PR.
