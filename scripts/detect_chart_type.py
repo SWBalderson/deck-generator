@@ -6,6 +6,7 @@ Auto-detect optimal chart type based on data structure.
 import argparse
 import json
 from typing import Dict, List, Any
+from pathlib import Path
 
 
 def is_time_series(data: List[Dict]) -> bool:
@@ -92,14 +93,61 @@ def detect_chart_type(data: List[Dict], context: str = "") -> str:
     return 'bar'
 
 
+def fallback_from_context(context: str) -> str:
+    """Fallback chart-type heuristic when structured data is unavailable."""
+    context = context.lower()
+    if any(word in context for word in ['growth', 'trend', 'over time', 'quarter', 'year']):
+        return 'line'
+    if any(word in context for word in ['composition', 'share', 'breakdown', 'distribution']):
+        return 'donut'
+    if any(word in context for word in ['change', 'increase', 'decrease', 'delta', 'bridge']):
+        return 'waterfall'
+    if any(word in context for word in ['comparison', 'vs', 'versus', 'ranking']):
+        return 'bar'
+    return 'bar'
+
+
+def build_content_index(content: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """Index ingested documents by basename for lookup from source_file."""
+    indexed = {}
+    for path, item in content.get('contents', {}).items():
+        basename = Path(path).name
+        indexed[basename] = item
+        indexed[path] = item
+    return indexed
+
+
+def extract_records(document: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Extract tabular records from ingested document payload."""
+    if not document:
+        return []
+
+    if isinstance(document.get('data'), list):
+        return [r for r in document['data'] if isinstance(r, dict)]
+
+    if isinstance(document.get('data'), dict):
+        for value in document['data'].values():
+            if isinstance(value, list) and value and isinstance(value[0], dict):
+                return value
+
+    return []
+
+
 def main():
     parser = argparse.ArgumentParser(description='Auto-detect chart types')
     parser.add_argument('--analysis', required=True, help='Path to analysis.json')
+    parser.add_argument('--content', help='Optional path to content.json from ingestion')
     parser.add_argument('--output', required=True, help='Output chart-types.json')
     args = parser.parse_args()
     
     with open(args.analysis, 'r', encoding='utf-8') as f:
         analysis = json.load(f)
+
+    content_index = {}
+    if args.content:
+        with open(args.content, 'r', encoding='utf-8') as f:
+            content = json.load(f)
+        content_index = build_content_index(content)
     
     chart_types = {}
     
@@ -109,22 +157,15 @@ def main():
         slide_id = f"slide_{i+1}"
         
         if slide.get('data_file') and slide.get('visual', {}).get('type') == 'chart':
-            data_file = slide['data_file']
-            # In real implementation, would load and analyze the data file
-            # For now, use context clues
+            visual = slide.get('visual', {})
+            source_file = visual.get('source_file')
+            records = extract_records(content_index.get(source_file, {})) if source_file else []
             context = slide.get('title', '') + ' ' + slide.get('content', '')
-            
-            # Simple heuristic based on slide content
-            if any(word in context.lower() for word in ['growth', 'trend', 'over time', 'quarter', 'year']):
-                chart_types[slide_id] = 'line'
-            elif any(word in context.lower() for word in ['composition', 'share', 'breakdown', 'distribution']):
-                chart_types[slide_id] = 'donut'
-            elif any(word in context.lower() for word in ['change', 'increase', 'decrease', 'delta', 'bridge']):
-                chart_types[slide_id] = 'waterfall'
-            elif any(word in context.lower() for word in ['comparison', 'vs', 'versus', 'ranking']):
-                chart_types[slide_id] = 'bar'
+
+            if records:
+                chart_types[slide_id] = detect_chart_type(records, context)
             else:
-                chart_types[slide_id] = 'bar'  # default
+                chart_types[slide_id] = fallback_from_context(context)
         else:
             chart_types[slide_id] = 'none'
     

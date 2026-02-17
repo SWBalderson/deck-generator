@@ -178,6 +178,9 @@ Use these fixtures to validate chart rendering compatibility:
 
 - `examples/fixtures/chart-data-only.json` - legacy data-only shape
 - `examples/fixtures/chart-full-config.json` - full Chart.js config shape
+- `examples/fixtures/detect-timeseries.json` - expected detection: `line`
+- `examples/fixtures/detect-composition.json` - expected detection: `pie`/`donut`
+- `examples/fixtures/detect-waterfall.json` - expected detection: `waterfall`
 
 ## Analysis Chart Mapping Contract
 

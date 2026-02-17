@@ -67,7 +67,7 @@ Status: Active
 
 - [x] **P2.1 Analysis data contract**
   - Define and document chart mapping fields in `analysis.json` (for example `data_file`, `x_key`, `y_key`, `series_key`).
-- [ ] **P2.2 Data-based type detection**
+- [x] **P2.2 Data-based type detection**
   - Refactor `scripts/detect_chart_type.py` to load and inspect real datasets where available.
   - Keep context heuristics as fallback.
 - [ ] **P2.3 Real chart generation**
@@ -181,6 +181,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P1.3 colour propagation - `--colors` now applies to copied theme files and chart generation palettes.
 - 2026-02-17 - (pending commit) - Completed P1.4 logo fallback paths - Deck logo now resolves from `public/logo.*` and `public/images/logo.*`.
 - 2026-02-17 - (pending commit) - Completed P2.1 analysis data contract - Added `source_file`/`x_key`/`y_key`/`series_key` guidance for charted slides.
+- 2026-02-17 - (pending commit) - Completed P2.2 data-based type detection - Detector now reads ingested content when `source_file` is provided and falls back to context heuristics.
 
 ---
 
@@ -188,4 +189,5 @@ Use this format:
 
 - [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
 - [ ] Start **P2.2 Data-based type detection** in `scripts/detect_chart_type.py`.
-- [ ] Expand fixtures to cover timeseries/composition/waterfall shape detection.
+- [ ] Start **P2.3 Real chart generation** in `scripts/generate_charts.py`.
+- [ ] Expand fixtures to cover source-to-chart mapping cases.

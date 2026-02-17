@@ -1,0 +1,6 @@
+[
+  { "segment": "Classroom", "share": 42 },
+  { "segment": "Boarding", "share": 25 },
+  { "segment": "Arts", "share": 18 },
+  { "segment": "Sport", "share": 15 }
+]

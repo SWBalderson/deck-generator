@@ -126,7 +126,7 @@ Return: structured JSON with slides array
 
 ### Step 4: Detect Chart Types
 
-Run: `python scripts/detect_chart_type.py --analysis .temp/analysis.json --output .temp/chart-types.json`
+Run: `python scripts/detect_chart_type.py --analysis .temp/analysis.json --content .temp/content.json --output .temp/chart-types.json`
 
 Auto-detects:
 - Time series → Line chart
