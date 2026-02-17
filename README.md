@@ -23,10 +23,11 @@ npm install -D playwright-chromium
 
 1. Place source documents in `source_docs/` folder
 2. Run skill and answer questions
-3. Generate MidJourney images using provided prompts
-4. Place images in `public/images/`
-5. Rebuild slides (images are auto-detected)
-6. Re-export presentation
+3. Skill creates a Slidev project (including `git init` and initial staging)
+4. Generate MidJourney images using provided prompts
+5. Place images in `public/images/`
+6. Rebuild slides (images are auto-detected)
+7. Re-export presentation
 
 ## Chart Types Supported
 
@@ -127,7 +128,8 @@ Important:
 ## Git Integration
 
 Every presentation is automatically tracked in git:
-- Initial commit on creation
+- Repository initialised and files staged on project creation
+- Initial commit after first full generation/export
 - Each regeneration creates a new commit
 - View history: `git log`
 - Rollback: `git checkout [commit]`

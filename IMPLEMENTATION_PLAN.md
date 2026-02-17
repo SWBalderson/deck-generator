@@ -33,7 +33,7 @@ Status: Active
 - [x] **P1.1 Chart contract fix**
   - Update `assets/components/DeckChart.vue` to support full chart config JSON (`type`, `data`, `options`) and backward-compatible data-only JSON.
   - Add defensive error handling and console diagnostics.
-- [ ] **P1.2 Docs/workflow consistency**
+- [x] **P1.2 Docs/workflow consistency**
   - Update `SKILL.md` and `README.md` to remove contradictory git-init sequencing.
   - Keep one canonical workflow order.
 - [ ] **P1.3 Colour propagation**
@@ -177,11 +177,11 @@ Use this format:
 
 - 2026-02-17 - Plan created - Initial roadmap baseline established.
 - 2026-02-17 - (pending commit) - Completed P1.1 chart contract fix and added chart fixtures - Renderer now supports both data-only and full Chart.js config JSON.
+- 2026-02-17 - (pending commit) - Completed P1.2 docs/workflow consistency - SKILL and README now match project creation + git initialisation behaviour.
 
 ---
 
 ## Current next actions
 
-- [ ] Start **P1.2 Docs/workflow consistency** in `SKILL.md` and `README.md`.
-- [ ] Continue **P1.3 Colour propagation** in project and chart generation scripts.
+- [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
 - [ ] Continue **P1.4 Logo fallback paths** in `assets/components/DeckLogo.vue`.

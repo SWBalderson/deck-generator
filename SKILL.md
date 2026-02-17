@@ -169,19 +169,7 @@ Each slide gets 3 prompt variations with different visual approaches.
 
 Stop on first error.
 
-### Step 7: Initialize Git
-
-Run:
-```bash
-cd [deck_dir]
-git init
-git add .
-git commit -m "Initial deck structure"
-```
-
-Stop on first error.
-
-### Step 8: Create Slidev Project
+### Step 7: Create Slidev Project
 
 Run: `python scripts/create_slidev_project.py --theme [theme] --colors [colors] --logo [logo] --output [deck_dir]/`
 
@@ -192,6 +180,20 @@ Scaffolds:
 - UnoCSS configuration
 - public/images/ folder (empty, ready for MidJourney images)
 - public/data/ folder (with chart JSONs)
+- Git repository initialised (`git init` + staged files)
+
+Stop on first error.
+
+### Step 8: Initialize Git Commit
+
+Run:
+```bash
+cd [deck_dir]
+# repository is already initialised by create_slidev_project.py
+# ensure all generated files are staged
+git add .
+git commit -m "Initial deck structure"
+```
 
 Stop on first error.
 
