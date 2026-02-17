@@ -230,6 +230,29 @@ python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --conte
 python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --strict --threshold 70
 ```
 
+Consulting-quality score model (100 points):
+
+- `action_titles`: 25
+- `pyramid`: 20
+- `mece`: 20
+- `minimalist`: 15
+- `data_evidence`: 20
+
+Severity bands:
+
+- `90-100`: Excellent
+- `75-89`: Good
+- `60-74`: Needs refinement
+- `<60`: Rework recommended
+
+The report JSON includes:
+
+- `overall_score`, `overall_band`
+- `category_scores`, `category_penalties`
+- `blocking_issues`, `warnings`
+- `slide_findings`
+- `recommended_fixes` (ranked by impact)
+
 Or run during build:
 
 ```bash
@@ -296,6 +319,16 @@ python scripts/run_fixture_checks.py
 
 CI runs both fixture checks and the smoke pipeline on push/PR via `.github/workflows/ci.yml`.
 Fixture checks include a strict consulting-quality linter pass on `examples/fixtures/consulting-quality-good.json`.
+
+To run the same strict gate locally:
+
+```bash
+python scripts/lint_consulting_quality.py \
+  --analysis examples/fixtures/consulting-quality-good.json \
+  --content .temp/content.json \
+  --strict \
+  --threshold 70
+```
 
 ## Analysis Chart Mapping Contract
 
