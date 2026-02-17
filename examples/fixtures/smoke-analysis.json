@@ -1,0 +1,53 @@
+{
+  "title": "Smoke Test Deck",
+  "subtitle": "Pipeline validation without LLM runtime",
+  "author": "deck-generator",
+  "theme": "consulting",
+  "slides": [
+    {
+      "layout": "title",
+      "title": "Smoke Test Deck",
+      "subtitle": "Pipeline validation without LLM runtime",
+      "source": "q4_strategy_brief.md",
+      "visual": {
+        "type": "none"
+      }
+    },
+    {
+      "layout": "chart-full",
+      "title": "Quarterly revenue trends show sustained growth above target.",
+      "source": "market_data.csv",
+      "data_file": "chart_revenue.json",
+      "visual": {
+        "type": "chart",
+        "chart_type": "line",
+        "data_file": "chart_revenue.json",
+        "source_file": "market_data.csv",
+        "x_key": "Quarter",
+        "y_key": "Revenue"
+      }
+    },
+    {
+      "layout": "content",
+      "title": "Q4 performance exceeded plan and supports expansion in the next cycle.",
+      "source": "q4_strategy_brief.md",
+      "bullets": [
+        {
+          "main": "Revenue outperformance",
+          "detail": "Q4 revenue finished above target with stronger growth momentum."
+        },
+        {
+          "main": "Client acquisition",
+          "detail": "New-client additions accelerated in the final quarter."
+        },
+        {
+          "main": "Strategic implication",
+          "detail": "Capacity planning and market expansion options should be reviewed early."
+        }
+      ],
+      "visual": {
+        "type": "none"
+      }
+    }
+  ]
+}

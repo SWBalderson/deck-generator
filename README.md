@@ -258,6 +258,20 @@ python scripts/apply_iterative_controls.py \
 
 Use `--unlock-slides` to remove locks.
 
+## Smoke Test
+
+Run an end-to-end smoke pipeline (ingest -> analyse helper -> detect -> chart -> build -> export SPA):
+
+```bash
+./scripts/smoke_test.sh
+```
+
+Optional custom work directory:
+
+```bash
+./scripts/smoke_test.sh /tmp/deck-generator-smoke
+```
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:

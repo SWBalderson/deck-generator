@@ -468,3 +468,11 @@ python scripts/generate_midjourney_prompts.py \
   --output midjourney-prompts.md \
   --theme consulting
 ```
+
+### Smoke Test (Maintainer)
+
+Run full non-LLM smoke flow for regression checks:
+
+```bash
+./scripts/smoke_test.sh
+```

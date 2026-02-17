@@ -153,7 +153,7 @@ Status: Active
 ## Testing and CI workstream (parallel)
 
 - [x] Add fixture datasets for chart detection and generation.
-- [ ] Add smoke test script: ingest -> analyse -> detect -> chart -> build -> export.
+- [x] Add smoke test script: ingest -> analyse -> detect -> chart -> build -> export.
 - [ ] Run smoke + fixture tests in CI for each PR.
 
 ---
@@ -192,6 +192,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P4.2 speaker notes - Added `scripts/generate_speaker_notes.py` for concise or detailed presenter notes.
 - 2026-02-17 - (pending commit) - Completed P4.3 citation traceability - Added `scripts/generate_citation_trace.py` to map slide bullets to source excerpts.
 - 2026-02-17 - (pending commit) - Completed P4.4 iterative controls - Added `scripts/apply_iterative_controls.py` for slide locks and selective regeneration merges.
+- 2026-02-17 - (pending commit) - Added smoke test automation - Added `scripts/smoke_test.sh` and fixture analysis for end-to-end pipeline checks.
 
 ---
 
@@ -199,5 +200,4 @@ Use this format:
 
 - [x] Add strict/warn modes for validation and lint outputs.
 - [x] Review remaining scripts for typed exception handling and actionable errors.
-- [ ] Add smoke test script: ingest -> analyse -> detect -> chart -> build -> export.
 - [ ] Run smoke + fixture tests in CI for each PR.
