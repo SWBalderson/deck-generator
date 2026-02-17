@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deck-generator.local/schemas/analysis.schema.json",
+  "title": "Deck Analysis",
+  "type": "object",
+  "required": ["title", "slides"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "subtitle": { "type": "string" },
+    "author": { "type": "string" },
+    "theme": { "type": "string" },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["layout", "title"],
+        "properties": {
+          "layout": {
+            "type": "string",
+            "enum": ["title", "section", "content", "two-col", "chart-full", "end"]
+          },
+          "title": { "type": "string", "minLength": 1 },
+          "subtitle": { "type": "string" },
+          "source": { "type": "string" },
+          "data_file": { "type": "string" },
+          "bullets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["main"],
+              "properties": {
+                "main": { "type": "string", "minLength": 1 },
+                "detail": { "type": "string" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "visual": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["chart", "image", "none"] },
+              "chart_type": { "type": "string" },
+              "data_file": { "type": "string" },
+              "filename": { "type": "string" },
+              "source_file": { "type": "string" },
+              "x_key": { "type": "string" },
+              "y_key": { "type": "string" },
+              "series_key": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

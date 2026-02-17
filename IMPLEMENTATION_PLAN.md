@@ -98,7 +98,7 @@ Status: Active
 
 ### Tasks
 
-- [ ] **P3.1 Analysis schema**
+- [x] **P3.1 Analysis schema**
   - Introduce JSON schema for `analysis.json`.
 - [ ] **P3.2 Validation script**
   - Add `scripts/validate_analysis.py` and integrate into build/export path.
@@ -184,6 +184,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P2.2 data-based type detection - Detector now reads ingested content when `source_file` is provided and falls back to context heuristics.
 - 2026-02-17 - (pending commit) - Completed P2.3 real chart generation - Chart configs now use mapped source rows (`source_file`, `x_key`, `y_key`, optional `series_key`) with sample fallback only when mapping is unavailable.
 - 2026-02-17 - (pending commit) - Completed P2.4 manual overrides - Optional `chart-overrides.json` now controls chart type and mapping per slide.
+- 2026-02-17 - (pending commit) - Completed P3.1 analysis schema - Added baseline JSON schema at `schemas/analysis.schema.json`.
 
 ---
 
@@ -192,3 +193,6 @@ Use this format:
 - [ ] Start **P3.1 Analysis schema** in a standalone schema file.
 - [ ] Implement **P3.2 Validation script** and integrate it in build/export paths.
 - [ ] Start **P3.3 Slide quality lints** with source/title/bullet checks.
+- [ ] Implement **P3.2 Validation script** and integrate it in build/export paths.
+- [ ] Start **P3.3 Slide quality lints** with source/title/bullet checks.
+- [ ] Begin **P3.4 Error handling cleanup** in scripts using broad `except` blocks.

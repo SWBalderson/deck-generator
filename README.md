@@ -206,3 +206,5 @@ Optional override file (`chart-overrides.json`) can force chart type and mapping
   }
 }
 ```
+
+Schema reference: `schemas/analysis.schema.json`
