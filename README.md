@@ -232,6 +232,16 @@ python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output
 python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output speaker-notes.md --style detailed
 ```
 
+## Citation Traceability
+
+Generate a bullet-to-source citation trace file:
+
+```bash
+python scripts/generate_citation_trace.py --analysis .temp/analysis.json --content .temp/content.json --output citation-trace.json
+```
+
+This creates slide-by-slide citation mappings with matched source excerpts where keyword overlap is sufficient.
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:

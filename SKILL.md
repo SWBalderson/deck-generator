@@ -235,6 +235,13 @@ Run:
 
 Use `--style detailed` when you want fuller presenter talking points.
 
+### Step 9c: Generate Citation Trace (Optional)
+
+Run:
+`python scripts/generate_citation_trace.py --analysis .temp/analysis.json --content .temp/content.json --output [deck_dir]/citation-trace.json`
+
+This produces per-bullet source excerpt matches to improve evidence traceability.
+
 ### Step 10: Export
 
 Run:
