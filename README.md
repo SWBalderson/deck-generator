@@ -242,6 +242,22 @@ python scripts/generate_citation_trace.py --analysis .temp/analysis.json --conte
 
 This creates slide-by-slide citation mappings with matched source excerpts where keyword overlap is sufficient.
 
+## Iterative Slide Controls
+
+Preserve locked slides and selectively regenerate only chosen slides:
+
+```bash
+python scripts/apply_iterative_controls.py \
+  --base-analysis .temp/analysis.json \
+  --new-analysis .temp/analysis.new.json \
+  --output .temp/analysis.json \
+  --locks-file .temp/slide-locks.json \
+  --lock-slides 2 5 \
+  --regenerate-only 4
+```
+
+Use `--unlock-slides` to remove locks.
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:

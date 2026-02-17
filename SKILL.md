@@ -294,6 +294,9 @@ After viewing the presentation, request changes via prompt:
 - "Add a comparison table to slide [N]"
 - "Update the data on slide [N] with [new data]"
 - "Regenerate with emphasis on [theme]"
+- "Lock slide [N]"
+- "Unlock slide [N]"
+- "Regenerate only slide [N]"
 - "Optimise images" (runs image optimisation)
 - "Export only [format]"
 - "Show me the MidJourney prompts again"
@@ -301,9 +304,22 @@ After viewing the presentation, request changes via prompt:
 **Process:**
 1. User requests change
 2. Skill updates slides.md and/or analysis.json
-3. Skill regenerates affected charts
-4. Skill re-exports all formats
-5. Skill commits changes to git
+3. Apply locks/selective regeneration controls as needed
+4. Skill regenerates affected charts
+5. Skill re-exports all formats
+6. Skill commits changes to git
+
+Iterative controls helper:
+
+```bash
+python scripts/apply_iterative_controls.py \
+  --base-analysis [deck_dir]/.temp/analysis.json \
+  --new-analysis [deck_dir]/.temp/analysis.new.json \
+  --output [deck_dir]/.temp/analysis.json \
+  --locks-file [deck_dir]/.temp/slide-locks.json \
+  --lock-slides 2 5 \
+  --regenerate-only 4
+```
 
 ## Manual Steps (User)
 

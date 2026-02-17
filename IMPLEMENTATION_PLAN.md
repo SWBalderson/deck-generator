@@ -134,14 +134,14 @@ Status: Active
   - Generate concise presenter notes per slide.
 - [x] **P4.3 Citation traceability**
   - Link slide bullets to source excerpts/pages where possible.
-- [ ] **P4.4 Iterative controls**
+- [x] **P4.4 Iterative controls**
   - Add slide-level locks and selective regeneration support.
 
 ### Acceptance criteria
 
 - [x] Audience mode can be selected at generation time.
 - [x] Notes/citations are generated when requested.
-- [ ] Locked slides remain unchanged during iterative edits.
+- [x] Locked slides remain unchanged during iterative edits.
 
 ### Estimate
 
@@ -191,6 +191,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P4.1 audience modes - Added audience-aware analysis helper options and documentation for board/staff/parents/mixed modes.
 - 2026-02-17 - (pending commit) - Completed P4.2 speaker notes - Added `scripts/generate_speaker_notes.py` for concise or detailed presenter notes.
 - 2026-02-17 - (pending commit) - Completed P4.3 citation traceability - Added `scripts/generate_citation_trace.py` to map slide bullets to source excerpts.
+- 2026-02-17 - (pending commit) - Completed P4.4 iterative controls - Added `scripts/apply_iterative_controls.py` for slide locks and selective regeneration merges.
 
 ---
 
@@ -198,4 +199,5 @@ Use this format:
 
 - [x] Add strict/warn modes for validation and lint outputs.
 - [x] Review remaining scripts for typed exception handling and actionable errors.
-- [ ] Start **P4.4 Iterative controls** for slide locks and selective regeneration.
+- [ ] Add smoke test script: ingest -> analyse -> detect -> chart -> build -> export.
+- [ ] Run smoke + fixture tests in CI for each PR.
