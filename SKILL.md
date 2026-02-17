@@ -228,6 +228,13 @@ The build script now checks for existing images in `public/images/`:
 
 Stop on first error.
 
+### Step 9b: Generate Speaker Notes (Optional)
+
+Run:
+`python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output [deck_dir]/speaker-notes.md`
+
+Use `--style detailed` when you want fuller presenter talking points.
+
 ### Step 10: Export
 
 Run:

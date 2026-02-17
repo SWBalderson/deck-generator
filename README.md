@@ -223,6 +223,15 @@ python scripts/build_slides.py --analysis .temp/analysis.json --template templat
 python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --lint --lint-strict
 ```
 
+## Speaker Notes
+
+Generate presenter notes from analysis output:
+
+```bash
+python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output speaker-notes.md
+python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output speaker-notes.md --style detailed
+```
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:
