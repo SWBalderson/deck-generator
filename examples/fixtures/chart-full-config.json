@@ -1,0 +1,39 @@
+{
+  "type": "line",
+  "data": {
+    "labels": [
+      "Week 1",
+      "Week 2",
+      "Week 3",
+      "Week 4"
+    ],
+    "datasets": [
+      {
+        "label": "Attendance (%)",
+        "data": [
+          91,
+          92,
+          94,
+          95
+        ],
+        "borderColor": "#003366",
+        "backgroundColor": "#00336620",
+        "borderWidth": 3,
+        "fill": true,
+        "tension": 0.3
+      }
+    ]
+  },
+  "options": {
+    "plugins": {
+      "legend": {
+        "display": false
+      }
+    },
+    "scales": {
+      "y": {
+        "beginAtZero": false
+      }
+    }
+  }
+}

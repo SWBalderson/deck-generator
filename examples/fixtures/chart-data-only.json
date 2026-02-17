@@ -1,0 +1,20 @@
+{
+  "labels": [
+    "Term 1",
+    "Term 2",
+    "Term 3"
+  ],
+  "datasets": [
+    {
+      "label": "Progress Index",
+      "data": [
+        62,
+        71,
+        79
+      ],
+      "backgroundColor": "#003366",
+      "borderColor": "#003366",
+      "borderWidth": 0
+    }
+  ]
+}

@@ -161,3 +161,10 @@ Every presentation is automatically tracked in git:
 # - dist/ (web version)
 # - midjourney-prompts.md
 ```
+
+## Chart Fixtures
+
+Use these fixtures to validate chart rendering compatibility:
+
+- `examples/fixtures/chart-data-only.json` - legacy data-only shape
+- `examples/fixtures/chart-full-config.json` - full Chart.js config shape

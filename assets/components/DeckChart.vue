@@ -26,25 +26,49 @@ const props = defineProps({
 const chartId = ref(`chart-${Math.random().toString(36).substr(2, 9)}`)
 
 onMounted(async () => {
-  const response = await fetch(props.data)
-  const chartData = await response.json()
-  
-  const ctx = document.getElementById(chartId.value).getContext('2d')
-  
-  new Chart(ctx, {
-    type: props.type,
-    data: chartData,
-    options: {
+  try {
+    const response = await fetch(props.data)
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status} for ${props.data}`)
+
+    const chartConfig = await response.json()
+    const resolvedType = chartConfig.type || props.type
+    const resolvedData = chartConfig.data || chartConfig
+    const resolvedOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      ...(chartConfig.options || {}),
+      ...props.options,
       plugins: {
         legend: {
-          display: chartData.datasets?.length > 1
-        }
+          display: resolvedData.datasets?.length > 1,
+        },
+        ...((chartConfig.options && chartConfig.options.plugins) || {}),
+        ...(props.options.plugins || {}),
       },
-      ...props.options
     }
-  })
+
+    const canvas = document.getElementById(chartId.value)
+    if (!canvas)
+      throw new Error(`Canvas element not found for ${chartId.value}`)
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx)
+      throw new Error(`2D context unavailable for ${chartId.value}`)
+
+    new Chart(ctx, {
+      type: resolvedType,
+      data: resolvedData,
+      options: resolvedOptions,
+    })
+  }
+  catch (error) {
+    console.error('[DeckChart] Failed to render chart', {
+      dataPath: props.data,
+      requestedType: props.type,
+      error,
+    })
+  }
 })
 </script>
 
