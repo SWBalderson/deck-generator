@@ -1,0 +1,13 @@
+{
+  "contents": {
+    "source_docs/school-metrics.csv": {
+      "filename": "school-metrics.csv",
+      "type": "csv",
+      "data": [
+        { "term": "Autumn", "attendance": 94.1 },
+        { "term": "Spring", "attendance": 95.2 },
+        { "term": "Summer", "attendance": 96.0 }
+      ]
+    }
+  }
+}

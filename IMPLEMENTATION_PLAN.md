@@ -70,7 +70,7 @@ Status: Active
 - [x] **P2.2 Data-based type detection**
   - Refactor `scripts/detect_chart_type.py` to load and inspect real datasets where available.
   - Keep context heuristics as fallback.
-- [ ] **P2.3 Real chart generation**
+- [x] **P2.3 Real chart generation**
   - Refactor `scripts/generate_charts.py` to map source columns to chart datasets.
   - Remove hard-coded demo values.
 - [ ] **P2.4 Manual overrides**
@@ -182,6 +182,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P1.4 logo fallback paths - Deck logo now resolves from `public/logo.*` and `public/images/logo.*`.
 - 2026-02-17 - (pending commit) - Completed P2.1 analysis data contract - Added `source_file`/`x_key`/`y_key`/`series_key` guidance for charted slides.
 - 2026-02-17 - (pending commit) - Completed P2.2 data-based type detection - Detector now reads ingested content when `source_file` is provided and falls back to context heuristics.
+- 2026-02-17 - (pending commit) - Completed P2.3 real chart generation - Chart configs now use mapped source rows (`source_file`, `x_key`, `y_key`, optional `series_key`) with sample fallback only when mapping is unavailable.
 
 ---
 
@@ -190,4 +191,5 @@ Use this format:
 - [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
 - [ ] Start **P2.2 Data-based type detection** in `scripts/detect_chart_type.py`.
 - [ ] Start **P2.3 Real chart generation** in `scripts/generate_charts.py`.
-- [ ] Expand fixtures to cover source-to-chart mapping cases.
+- [x] Expand fixtures to cover source-to-chart mapping cases.
+- [ ] Start **P2.4 Manual overrides** support for chart type/field mappings.

@@ -140,7 +140,7 @@ Stop on first error.
 
 ### Step 5: Generate Charts
 
-Run: `python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --output [deck_dir]/public/data/ --theme [theme] --colors [colors]`
+Run: `python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --output [deck_dir]/public/data/ --theme [theme] --colors [colors]`
 
 Generates Chart.js configurations with:
 - Theme colors

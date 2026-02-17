@@ -1,0 +1,18 @@
+{
+  "title": "Mapped chart fixture",
+  "slides": [
+    {
+      "layout": "chart-full",
+      "title": "Attendance improved each term.",
+      "data_file": "chart_1.json",
+      "visual": {
+        "type": "chart",
+        "chart_type": "line",
+        "data_file": "chart_1.json",
+        "source_file": "school-metrics.csv",
+        "x_key": "term",
+        "y_key": "attendance"
+      }
+    }
+  ]
+}

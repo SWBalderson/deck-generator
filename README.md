@@ -53,7 +53,7 @@ For custom colour overrides, pass JSON to both project scaffolding and chart gen
 
 ```bash
 python scripts/create_slidev_project.py --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}' --output my-deck
-python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --output my-deck/public/data --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}'
+python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --output my-deck/public/data --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}'
 ```
 
 For local/private themes that should not be pushed to GitHub, use:
@@ -181,6 +181,7 @@ Use these fixtures to validate chart rendering compatibility:
 - `examples/fixtures/detect-timeseries.json` - expected detection: `line`
 - `examples/fixtures/detect-composition.json` - expected detection: `pie`/`donut`
 - `examples/fixtures/detect-waterfall.json` - expected detection: `waterfall`
+- `examples/fixtures/analysis-mapped-sample.json` + `content-mapped-sample.json` + `chart-types-mapped-sample.json` - source-to-chart mapping fixture
 
 ## Analysis Chart Mapping Contract
 
