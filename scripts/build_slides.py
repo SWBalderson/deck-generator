@@ -49,6 +49,11 @@ def main():
     parser.add_argument('--deck-dir', help='Deck directory for image detection (optional)')
     parser.add_argument('--lint', action='store_true', help='Run slide quality lint before rendering')
     parser.add_argument('--lint-strict', action='store_true', help='Fail build on lint warnings (requires --lint)')
+    parser.add_argument('--consulting-lint', action='store_true', help='Run consulting quality linter')
+    parser.add_argument('--consulting-lint-strict', action='store_true', help='Fail build on consulting-lint score/blocks')
+    parser.add_argument('--consulting-lint-threshold', type=int, default=70, help='Consulting lint strict score threshold')
+    parser.add_argument('--content', help='Optional content.json path for consulting-lint evidence checks')
+    parser.add_argument('--citation-trace', help='Optional citation-trace.json for consulting-lint trace checks')
     args = parser.parse_args()
     
     # Load template
@@ -77,6 +82,32 @@ def main():
         if lint_result.returncode != 0:
             if lint_result.stderr.strip():
                 print(lint_result.stderr.strip(), file=sys.stderr)
+            sys.exit(1)
+
+    if args.consulting_lint:
+        consulting_linter = Path(__file__).parent / 'lint_consulting_quality.py'
+        report_out = Path(args.output).parent / 'consulting-quality-report.json'
+        consulting_cmd = [
+            sys.executable,
+            str(consulting_linter),
+            '--analysis',
+            args.analysis,
+            '--report-out',
+            str(report_out),
+        ]
+        if args.content:
+            consulting_cmd.extend(['--content', args.content])
+        if args.citation_trace:
+            consulting_cmd.extend(['--citation-trace', args.citation_trace])
+        if args.consulting_lint_strict:
+            consulting_cmd.extend(['--strict', '--threshold', str(args.consulting_lint_threshold)])
+
+        consulting_result = subprocess.run(consulting_cmd, capture_output=True, text=True)
+        if consulting_result.stdout.strip():
+            print(consulting_result.stdout.strip())
+        if consulting_result.returncode != 0:
+            if consulting_result.stderr.strip():
+                print(consulting_result.stderr.strip(), file=sys.stderr)
             sys.exit(1)
     
     slides = analysis.get('slides', [])

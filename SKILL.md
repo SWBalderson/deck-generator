@@ -212,6 +212,8 @@ Run: `python scripts/build_slides.py --analysis .temp/analysis.json --template t
 Optional quality checks:
 - Add `--lint` to show warnings without blocking build
 - Add `--lint --lint-strict` to fail on lint warnings
+- Add `--consulting-lint --content .temp/content.json` for scored consulting-quality checks
+- Add `--consulting-lint --consulting-lint-strict --consulting-lint-threshold 70` to enforce quality gate
 
 Generates complete slides.md with:
 - All slide content

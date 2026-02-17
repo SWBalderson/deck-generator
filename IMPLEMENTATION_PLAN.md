@@ -194,6 +194,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P4.4 iterative controls - Added `scripts/apply_iterative_controls.py` for slide locks and selective regeneration merges.
 - 2026-02-17 - (pending commit) - Added smoke test automation - Added `scripts/smoke_test.sh` and fixture analysis for end-to-end pipeline checks.
 - 2026-02-17 - (pending commit) - Added CI regression automation - Added `scripts/run_fixture_checks.py` and GitHub Actions workflow to run fixture + smoke checks on push/PR.
+- 2026-02-17 - (pending commit) - Added Consulting Quality Linter v2 - Added scored quality checks (`scripts/lint_consulting_quality.py`), build integration, and strict fixture regression.
 
 ---
 
@@ -202,3 +203,4 @@ Use this format:
 - [x] Add strict/warn modes for validation and lint outputs.
 - [x] Review remaining scripts for typed exception handling and actionable errors.
 - [ ] Monitor first CI runs and tune dependency/runtime settings if needed.
+- [ ] Tune consulting-lint thresholds and penalty weights from first real deck runs.

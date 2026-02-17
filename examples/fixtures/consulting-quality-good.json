@@ -1,0 +1,70 @@
+{
+  "title": "Consulting quality fixture",
+  "subtitle": "Strong structure and evidence",
+  "slides": [
+    {
+      "layout": "title",
+      "title": "Strategic performance has improved and supports measured expansion.",
+      "subtitle": "Consulting quality fixture"
+    },
+    {
+      "layout": "content",
+      "title": "Revenue performance improved materially and now exceeds target expectations.",
+      "source": "q4_strategy_brief.md",
+      "bullets": [
+        {
+          "main": "Growth evidence",
+          "detail": "Quarterly revenue increased by 33% from Q1 to Q4 based on reported figures."
+        },
+        {
+          "main": "Target variance",
+          "detail": "Q4 revenue outperformed target by 14%, confirming momentum in core demand."
+        },
+        {
+          "main": "Decision implication",
+          "detail": "Leadership should prioritise scalable delivery capacity in the next planning cycle."
+        }
+      ],
+      "visual": {
+        "type": "none"
+      }
+    },
+    {
+      "layout": "chart-full",
+      "title": "Quarterly revenue has risen consistently and validates the operating strategy.",
+      "source": "market_data.csv",
+      "insight": "Revenue increases each quarter and Q4 confirms sustained outperformance versus prior quarters.",
+      "data_file": "chart_revenue.json",
+      "visual": {
+        "type": "chart",
+        "chart_type": "line",
+        "data_file": "chart_revenue.json",
+        "source_file": "market_data.csv",
+        "x_key": "Quarter",
+        "y_key": "Revenue"
+      }
+    },
+    {
+      "layout": "content",
+      "title": "The organisation should convert momentum into a focused expansion plan next term.",
+      "source": "q4_strategy_brief.md",
+      "bullets": [
+        {
+          "main": "Priority action",
+          "detail": "Leadership should approve a phased capacity programme with clear ownership and milestones."
+        },
+        {
+          "main": "Risk control",
+          "detail": "Weekly review of delivery constraints should prevent quality erosion during growth."
+        },
+        {
+          "main": "Success metric",
+          "detail": "Track conversion, retention, and margin indicators to confirm expansion is sustainable."
+        }
+      ],
+      "visual": {
+        "type": "none"
+      }
+    }
+  ]
+}

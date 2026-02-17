@@ -223,6 +223,20 @@ python scripts/build_slides.py --analysis .temp/analysis.json --template templat
 python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --lint --lint-strict
 ```
 
+Advanced consulting-quality linting (scored report):
+
+```bash
+python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --report-out .temp/consulting-quality-report.json
+python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --strict --threshold 70
+```
+
+Or run during build:
+
+```bash
+python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --consulting-lint --content .temp/content.json
+python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --consulting-lint --consulting-lint-strict --consulting-lint-threshold 70 --content .temp/content.json
+```
+
 ## Speaker Notes
 
 Generate presenter notes from analysis output:
@@ -281,6 +295,7 @@ python scripts/run_fixture_checks.py
 ```
 
 CI runs both fixture checks and the smoke pipeline on push/PR via `.github/workflows/ci.yml`.
+Fixture checks include a strict consulting-quality linter pass on `examples/fixtures/consulting-quality-good.json`.
 
 ## Analysis Chart Mapping Contract
 

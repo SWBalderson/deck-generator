@@ -2,7 +2,6 @@
 """Run fast fixture-based regression checks for deck-generator scripts."""
 
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -144,6 +143,37 @@ def main():
         override_chart = read_json(override_chart_path)
         if override_chart.get('type') != 'bar':
             raise RuntimeError('Expected override chart type bar.')
+
+        # Build content used by consulting-quality fixture checks
+        # (re-using demo source files from examples)
+        run([
+            sys.executable,
+            str(SCRIPTS / 'ingest_documents.py'),
+            '--files',
+            str(ROOT / 'examples' / 'demo-presentation' / 'source_docs' / 'q4_strategy_brief.md'),
+            str(ROOT / 'examples' / 'demo-presentation' / 'source_docs' / 'market_data.csv'),
+            '--output',
+            str(tmp_path / 'smoke-content.json'),
+        ])
+
+        # 5) consulting quality linter strict pass fixture
+        consulting_report = tmp_path / 'consulting-quality-report.json'
+        run([
+            sys.executable,
+            str(SCRIPTS / 'lint_consulting_quality.py'),
+            '--analysis',
+            str(FIXTURES / 'consulting-quality-good.json'),
+            '--content',
+            str(tmp_path / 'smoke-content.json'),
+            '--strict',
+            '--threshold',
+            '70',
+            '--report-out',
+            str(consulting_report),
+        ])
+        report = read_json(consulting_report)
+        if report.get('overall_score', 0) < 70:
+            raise RuntimeError('Expected consulting quality score >= 70 for good fixture.')
 
     print('✓ Fixture checks passed')
 
