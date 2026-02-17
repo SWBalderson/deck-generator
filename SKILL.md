@@ -202,6 +202,10 @@ Stop on first error.
 
 Run: `python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output [deck_dir]/slides.md --deck-dir [deck_dir]`
 
+Optional quality checks:
+- Add `--lint` to show warnings without blocking build
+- Add `--lint --lint-strict` to fail on lint warnings
+
 Generates complete slides.md with:
 - All slide content
 - Chart component references

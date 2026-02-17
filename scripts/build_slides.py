@@ -47,6 +47,8 @@ def main():
     parser.add_argument('--template', required=True, help='Path to slides.md.jinja2')
     parser.add_argument('--output', required=True, help='Output slides.md path')
     parser.add_argument('--deck-dir', help='Deck directory for image detection (optional)')
+    parser.add_argument('--lint', action='store_true', help='Run slide quality lint before rendering')
+    parser.add_argument('--lint-strict', action='store_true', help='Fail build on lint warnings (requires --lint)')
     args = parser.parse_args()
     
     # Load template
@@ -63,6 +65,19 @@ def main():
     if validation.returncode != 0:
         print(validation.stderr.strip(), file=sys.stderr)
         sys.exit(1)
+
+    if args.lint:
+        linter = Path(__file__).parent / 'lint_slides.py'
+        lint_cmd = [sys.executable, str(linter), '--analysis', args.analysis]
+        if args.lint_strict:
+            lint_cmd.append('--strict')
+        lint_result = subprocess.run(lint_cmd, capture_output=True, text=True)
+        if lint_result.stdout.strip():
+            print(lint_result.stdout.strip())
+        if lint_result.returncode != 0:
+            if lint_result.stderr.strip():
+                print(lint_result.stderr.strip(), file=sys.stderr)
+            sys.exit(1)
     
     slides = analysis.get('slides', [])
     

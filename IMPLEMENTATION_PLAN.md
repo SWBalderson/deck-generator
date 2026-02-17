@@ -102,7 +102,7 @@ Status: Active
   - Introduce JSON schema for `analysis.json`.
 - [x] **P3.2 Validation script**
   - Add `scripts/validate_analysis.py` and integrate into build/export path.
-- [ ] **P3.3 Slide quality lints**
+- [x] **P3.3 Slide quality lints**
   - Add optional `scripts/lint_slides.py` checks (missing sources, empty bullets, weak action titles).
 - [ ] **P3.4 Error handling cleanup**
   - Replace broad `except:` blocks with typed exceptions and user-actionable errors.
@@ -110,7 +110,7 @@ Status: Active
 ### Acceptance criteria
 
 - [ ] Invalid analysis fails with clear remediation guidance.
-- [ ] Lint catches key quality issues before export.
+- [x] Lint catches key quality issues before export.
 - [ ] Common failure paths produce actionable diagnostics.
 
 ### Estimate
@@ -186,11 +186,12 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P2.4 manual overrides - Optional `chart-overrides.json` now controls chart type and mapping per slide.
 - 2026-02-17 - (pending commit) - Completed P3.1 analysis schema - Added baseline JSON schema at `schemas/analysis.schema.json`.
 - 2026-02-17 - (pending commit) - Completed P3.2 validation script - Added `scripts/validate_analysis.py` and integrated validation into build/export helpers.
+- 2026-02-17 - (pending commit) - Completed P3.3 slide quality lints - Added `scripts/lint_slides.py` with optional strict mode and build integration.
 
 ---
 
 ## Current next actions
 
-- [ ] Start **P3.3 Slide quality lints** with source/title/bullet checks.
 - [ ] Begin **P3.4 Error handling cleanup** in scripts using broad `except` blocks.
-- [ ] Add strict/warn modes for validation and lint outputs.
+- [x] Add strict/warn modes for validation and lint outputs.
+- [ ] Review remaining scripts for typed exception handling and actionable errors.

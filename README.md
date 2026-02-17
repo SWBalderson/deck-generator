@@ -194,6 +194,20 @@ python scripts/validate_analysis.py --analysis .temp/analysis.json
 
 `scripts/build_slides.py` now runs this validation automatically.
 
+Optional quality linting:
+
+```bash
+python scripts/lint_slides.py --analysis .temp/analysis.json
+python scripts/lint_slides.py --analysis .temp/analysis.json --strict
+```
+
+Or run during build:
+
+```bash
+python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --lint
+python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --lint --lint-strict
+```
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:
