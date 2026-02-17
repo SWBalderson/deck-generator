@@ -272,6 +272,16 @@ Optional custom work directory:
 ./scripts/smoke_test.sh /tmp/deck-generator-smoke
 ```
 
+## Fixture Checks
+
+Run fast fixture regressions:
+
+```bash
+python scripts/run_fixture_checks.py
+```
+
+CI runs both fixture checks and the smoke pipeline on push/PR via `.github/workflows/ci.yml`.
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:
