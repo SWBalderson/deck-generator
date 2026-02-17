@@ -11,11 +11,21 @@ const candidates = [
   '/logo-title.webp',
   '/logo-title.jpg',
   '/logo-title.jpeg',
+  '/images/logo-title.svg',
+  '/images/logo-title.png',
+  '/images/logo-title.webp',
+  '/images/logo-title.jpg',
+  '/images/logo-title.jpeg',
   '/logo.svg',
   '/logo.png',
   '/logo.webp',
   '/logo.jpg',
   '/logo.jpeg',
+  '/images/logo.svg',
+  '/images/logo.png',
+  '/images/logo.webp',
+  '/images/logo.jpg',
+  '/images/logo.jpeg',
 ]
 const current = ref(0)
 

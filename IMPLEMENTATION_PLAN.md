@@ -39,15 +39,15 @@ Status: Active
 - [x] **P1.3 Colour propagation**
   - Wire `--colors` through project creation and chart generation.
   - Ensure theme CSS and chart palettes use selected colours.
-- [ ] **P1.4 Logo fallback paths**
+- [x] **P1.4 Logo fallback paths**
   - Extend `assets/components/DeckLogo.vue` to include `/images/logo*` and `/images/logo-title*` candidates.
 
 ### Acceptance criteria
 
-- [ ] Charts render from current generated JSON without blank chart slides.
-- [ ] Custom colour inputs visibly affect deck theme and chart output.
-- [ ] Logo loads from both `public/logo.*` and `public/images/logo.*`.
-- [ ] Workflow docs match what scripts actually do.
+- [x] Charts render from current generated JSON without blank chart slides.
+- [x] Custom colour inputs visibly affect deck theme and chart output.
+- [x] Logo loads from both `public/logo.*` and `public/images/logo.*`.
+- [x] Workflow docs match what scripts actually do.
 
 ### Estimate
 
@@ -179,11 +179,12 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P1.1 chart contract fix and added chart fixtures - Renderer now supports both data-only and full Chart.js config JSON.
 - 2026-02-17 - (pending commit) - Completed P1.2 docs/workflow consistency - SKILL and README now match project creation + git initialisation behaviour.
 - 2026-02-17 - (pending commit) - Completed P1.3 colour propagation - `--colors` now applies to copied theme files and chart generation palettes.
+- 2026-02-17 - (pending commit) - Completed P1.4 logo fallback paths - Deck logo now resolves from `public/logo.*` and `public/images/logo.*`.
 
 ---
 
 ## Current next actions
 
 - [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
-- [ ] Start **P1.4 Logo fallback paths** in `assets/components/DeckLogo.vue`.
-- [ ] Begin Phase 1 acceptance checks after P1.4 is complete.
+- [ ] Start **P2.1 Analysis data contract** in docs and analysis JSON schema fields.
+- [ ] Plan fixture expansion for data-based detection in **P2.2**.

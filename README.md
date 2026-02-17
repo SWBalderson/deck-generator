@@ -144,6 +144,7 @@ Every presentation is automatically tracked in git:
 ## Tips
 
 - Use high-resolution logos (SVG preferred)
+- Logo autodetection supports both `public/logo.*` and `public/images/logo.*`
 - Generate images at 1920x1080 or larger
 - Keep source documents focused for better summaries
 - Use iterative editing to refine the story
