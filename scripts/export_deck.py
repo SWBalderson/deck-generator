@@ -80,6 +80,7 @@ def main():
     parser.add_argument('--timeout', type=int, default=60000, help='Export timeout in ms')
     parser.add_argument('--wait', type=int, default=1000, help='Per-slide render wait in ms for export')
     parser.add_argument('--base', default='/', help="Base path for SPA build (must start and end with '/')")
+    parser.add_argument('--analysis', help='Optional analysis.json path to validate before export')
     args = parser.parse_args()
     
     deck_dir = Path(args.deck_dir)
@@ -87,6 +88,14 @@ def main():
     if not deck_dir.exists():
         print(f"✗ Deck directory not found: {deck_dir}", file=sys.stderr)
         sys.exit(1)
+
+    if args.analysis:
+        validator = Path(__file__).parent / 'validate_analysis.py'
+        cmd = [sys.executable, str(validator), '--analysis', args.analysis]
+        validation = subprocess.run(cmd, capture_output=True, text=True)
+        if validation.returncode != 0:
+            print(validation.stderr.strip(), file=sys.stderr)
+            sys.exit(1)
     
     success = []
     failed = []

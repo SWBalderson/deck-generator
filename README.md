@@ -184,6 +184,16 @@ Use these fixtures to validate chart rendering compatibility:
 - `examples/fixtures/analysis-mapped-sample.json` + `content-mapped-sample.json` + `chart-types-mapped-sample.json` - source-to-chart mapping fixture
 - `examples/fixtures/chart-overrides-sample.json` - manual override fixture format
 
+## Validation
+
+Validate `analysis.json` before build/export:
+
+```bash
+python scripts/validate_analysis.py --analysis .temp/analysis.json
+```
+
+`scripts/build_slides.py` now runs this validation automatically.
+
 ## Analysis Chart Mapping Contract
 
 When a slide requests a chart, include these fields in `slide.visual`:

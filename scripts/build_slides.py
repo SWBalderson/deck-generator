@@ -6,6 +6,8 @@ Auto-detects existing images and enables them automatically.
 
 import argparse
 import json
+import subprocess
+import sys
 from pathlib import Path
 from jinja2 import Template
 
@@ -54,6 +56,13 @@ def main():
     # Load analysis
     with open(args.analysis, 'r', encoding='utf-8') as f:
         analysis = json.load(f)
+
+    validator = Path(__file__).parent / 'validate_analysis.py'
+    validate_cmd = [sys.executable, str(validator), '--analysis', args.analysis]
+    validation = subprocess.run(validate_cmd, capture_output=True, text=True)
+    if validation.returncode != 0:
+        print(validation.stderr.strip(), file=sys.stderr)
+        sys.exit(1)
     
     slides = analysis.get('slides', [])
     

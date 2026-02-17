@@ -229,6 +229,12 @@ bunx slidev build --out dist --base /
 
 If Bun is unavailable, use `npx slidev ...` equivalents.
 
+If using the helper script, validate analysis during export:
+
+```bash
+python scripts/export_deck.py --deck-dir [deck_dir] --analysis .temp/analysis.json --formats pdf pptx spa
+```
+
 Important: for static hosting under a subpath, set `--base` to a path that starts and ends with `/` (example: `/talks/q4-review/`).
 
 Stop on first error.
