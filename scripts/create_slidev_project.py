@@ -106,11 +106,12 @@ def create_project(output_dir: Path, theme: str, colors: dict, logo: Optional[st
     # Initialize with bun/npm
     try:
         subprocess.run(['bun', 'init', '-y'], cwd=output_dir, check=True, capture_output=True)
-    except:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         try:
             subprocess.run(['npm', 'init', '-y'], cwd=output_dir, check=True, capture_output=True)
-        except Exception as e:
-            print(f"✗ Failed to initialize project: {e}", file=sys.stderr)
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            detail = getattr(e, 'stderr', None) or str(e)
+            print(f"✗ Failed to initialize project with bun and npm: {detail}", file=sys.stderr)
             sys.exit(1)
     
     # Install dependencies
@@ -118,12 +119,13 @@ def create_project(output_dir: Path, theme: str, colors: dict, logo: Optional[st
     try:
         subprocess.run(['bun', 'add'] + deps, cwd=output_dir, check=True, capture_output=True)
         subprocess.run(['bun', 'add', '-d', 'playwright-chromium'], cwd=output_dir, check=True, capture_output=True)
-    except:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         try:
             subprocess.run(['npm', 'install'] + deps, cwd=output_dir, check=True, capture_output=True)
             subprocess.run(['npm', 'install', '-D', 'playwright-chromium'], cwd=output_dir, check=True, capture_output=True)
-        except Exception as e:
-            print(f"✗ Failed to install dependencies: {e}", file=sys.stderr)
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            detail = getattr(e, 'stderr', None) or str(e)
+            print(f"✗ Failed to install dependencies with bun and npm: {detail}", file=sys.stderr)
             sys.exit(1)
     
     # Copy theme files

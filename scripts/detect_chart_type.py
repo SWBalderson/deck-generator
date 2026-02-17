@@ -52,7 +52,7 @@ def is_waterfall_data(data: List[Dict]) -> bool:
         try:
             float(data[0][key])
             numeric_cols.append(key)
-        except:
+        except (TypeError, ValueError):
             pass
     
     if len(numeric_cols) >= 1:

@@ -104,14 +104,14 @@ Status: Active
   - Add `scripts/validate_analysis.py` and integrate into build/export path.
 - [x] **P3.3 Slide quality lints**
   - Add optional `scripts/lint_slides.py` checks (missing sources, empty bullets, weak action titles).
-- [ ] **P3.4 Error handling cleanup**
+- [x] **P3.4 Error handling cleanup**
   - Replace broad `except:` blocks with typed exceptions and user-actionable errors.
 
 ### Acceptance criteria
 
-- [ ] Invalid analysis fails with clear remediation guidance.
+- [x] Invalid analysis fails with clear remediation guidance.
 - [x] Lint catches key quality issues before export.
-- [ ] Common failure paths produce actionable diagnostics.
+- [x] Common failure paths produce actionable diagnostics.
 
 ### Estimate
 
@@ -187,11 +187,12 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P3.1 analysis schema - Added baseline JSON schema at `schemas/analysis.schema.json`.
 - 2026-02-17 - (pending commit) - Completed P3.2 validation script - Added `scripts/validate_analysis.py` and integrated validation into build/export helpers.
 - 2026-02-17 - (pending commit) - Completed P3.3 slide quality lints - Added `scripts/lint_slides.py` with optional strict mode and build integration.
+- 2026-02-17 - (pending commit) - Completed P3.4 error handling cleanup - Replaced broad `except:` usage and improved actionable fallback diagnostics.
 
 ---
 
 ## Current next actions
 
-- [ ] Begin **P3.4 Error handling cleanup** in scripts using broad `except` blocks.
 - [x] Add strict/warn modes for validation and lint outputs.
-- [ ] Review remaining scripts for typed exception handling and actionable errors.
+- [x] Review remaining scripts for typed exception handling and actionable errors.
+- [ ] Start **P4.1 Audience modes** design and prompt contract updates.
