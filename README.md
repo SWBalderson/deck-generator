@@ -53,7 +53,7 @@ For custom colour overrides, pass JSON to both project scaffolding and chart gen
 
 ```bash
 python scripts/create_slidev_project.py --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}' --output my-deck
-python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --output my-deck/public/data --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}'
+python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --overrides .temp/chart-overrides.json --output my-deck/public/data --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}'
 ```
 
 For local/private themes that should not be pushed to GitHub, use:
@@ -182,6 +182,7 @@ Use these fixtures to validate chart rendering compatibility:
 - `examples/fixtures/detect-composition.json` - expected detection: `pie`/`donut`
 - `examples/fixtures/detect-waterfall.json` - expected detection: `waterfall`
 - `examples/fixtures/analysis-mapped-sample.json` + `content-mapped-sample.json` + `chart-types-mapped-sample.json` - source-to-chart mapping fixture
+- `examples/fixtures/chart-overrides-sample.json` - manual override fixture format
 
 ## Analysis Chart Mapping Contract
 
@@ -192,3 +193,16 @@ When a slide requests a chart, include these fields in `slide.visual`:
 - `y_key`: column/key for values
 - `series_key` (optional): grouping field for multi-series charts
 - `data_file`: generated chart config output (for example `chart_5.json`)
+
+Optional override file (`chart-overrides.json`) can force chart type and mapping by slide id:
+
+```json
+{
+  "slide_3": {
+    "chart_type": "bar",
+    "source_file": "school-metrics.csv",
+    "x_key": "term",
+    "y_key": "attendance"
+  }
+}
+```

@@ -137,6 +137,7 @@ def main():
     parser = argparse.ArgumentParser(description='Auto-detect chart types')
     parser.add_argument('--analysis', required=True, help='Path to analysis.json')
     parser.add_argument('--content', help='Optional path to content.json from ingestion')
+    parser.add_argument('--overrides', help='Optional path to chart-overrides.json')
     parser.add_argument('--output', required=True, help='Output chart-types.json')
     args = parser.parse_args()
     
@@ -148,6 +149,15 @@ def main():
         with open(args.content, 'r', encoding='utf-8') as f:
             content = json.load(f)
         content_index = build_content_index(content)
+
+    overrides = {}
+    if args.overrides:
+        override_path = Path(args.overrides)
+        if override_path.exists():
+            with open(override_path, 'r', encoding='utf-8') as f:
+                overrides = json.load(f)
+        else:
+            print(f"⚠ Overrides file not found: {args.overrides} (continuing without overrides)")
     
     chart_types = {}
     
@@ -155,7 +165,12 @@ def main():
     slides = analysis.get('slides', [])
     for i, slide in enumerate(slides):
         slide_id = f"slide_{i+1}"
-        
+
+        slide_override = overrides.get(slide_id, {}) if isinstance(overrides, dict) else {}
+        if isinstance(slide_override, dict) and slide_override.get('chart_type'):
+            chart_types[slide_id] = slide_override['chart_type']
+            continue
+
         if slide.get('data_file') and slide.get('visual', {}).get('type') == 'chart':
             visual = slide.get('visual', {})
             source_file = visual.get('source_file')

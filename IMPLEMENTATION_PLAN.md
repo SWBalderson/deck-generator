@@ -73,14 +73,14 @@ Status: Active
 - [x] **P2.3 Real chart generation**
   - Refactor `scripts/generate_charts.py` to map source columns to chart datasets.
   - Remove hard-coded demo values.
-- [ ] **P2.4 Manual overrides**
+- [x] **P2.4 Manual overrides**
   - Add optional `chart-overrides.json` support to force chart type/field mappings.
 
 ### Acceptance criteria
 
-- [ ] CSV/XLSX/JSON-driven slides render charts from actual source values.
-- [ ] Type detection behaves predictably on fixture datasets.
-- [ ] Overrides can force chart type and mapping without code changes.
+- [x] CSV/XLSX/JSON-driven slides render charts from actual source values.
+- [x] Type detection behaves predictably on fixture datasets.
+- [x] Overrides can force chart type and mapping without code changes.
 
 ### Estimate
 
@@ -183,13 +183,12 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P2.1 analysis data contract - Added `source_file`/`x_key`/`y_key`/`series_key` guidance for charted slides.
 - 2026-02-17 - (pending commit) - Completed P2.2 data-based type detection - Detector now reads ingested content when `source_file` is provided and falls back to context heuristics.
 - 2026-02-17 - (pending commit) - Completed P2.3 real chart generation - Chart configs now use mapped source rows (`source_file`, `x_key`, `y_key`, optional `series_key`) with sample fallback only when mapping is unavailable.
+- 2026-02-17 - (pending commit) - Completed P2.4 manual overrides - Optional `chart-overrides.json` now controls chart type and mapping per slide.
 
 ---
 
 ## Current next actions
 
-- [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
-- [ ] Start **P2.2 Data-based type detection** in `scripts/detect_chart_type.py`.
-- [ ] Start **P2.3 Real chart generation** in `scripts/generate_charts.py`.
-- [x] Expand fixtures to cover source-to-chart mapping cases.
-- [ ] Start **P2.4 Manual overrides** support for chart type/field mappings.
+- [ ] Start **P3.1 Analysis schema** in a standalone schema file.
+- [ ] Implement **P3.2 Validation script** and integrate it in build/export paths.
+- [ ] Start **P3.3 Slide quality lints** with source/title/bullet checks.

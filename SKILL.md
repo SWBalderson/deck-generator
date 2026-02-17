@@ -126,7 +126,7 @@ Return: structured JSON with slides array
 
 ### Step 4: Detect Chart Types
 
-Run: `python scripts/detect_chart_type.py --analysis .temp/analysis.json --content .temp/content.json --output .temp/chart-types.json`
+Run: `python scripts/detect_chart_type.py --analysis .temp/analysis.json --content .temp/content.json --overrides .temp/chart-overrides.json --output .temp/chart-types.json`
 
 Auto-detects:
 - Time series → Line chart
@@ -140,7 +140,7 @@ Stop on first error.
 
 ### Step 5: Generate Charts
 
-Run: `python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --output [deck_dir]/public/data/ --theme [theme] --colors [colors]`
+Run: `python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --overrides .temp/chart-overrides.json --output [deck_dir]/public/data/ --theme [theme] --colors [colors]`
 
 Generates Chart.js configurations with:
 - Theme colors

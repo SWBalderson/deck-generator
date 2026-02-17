@@ -316,6 +316,7 @@ def main():
     parser.add_argument('--theme', default='consulting', help='Theme name')
     parser.add_argument('--colors', help='Optional JSON colour overrides')
     parser.add_argument('--content', help='Optional path to ingested content.json')
+    parser.add_argument('--overrides', help='Optional path to chart-overrides.json')
     args = parser.parse_args()
 
     hex_re = re.compile(r'^#[0-9A-Fa-f]{6}$')
@@ -351,6 +352,15 @@ def main():
         with open(args.content, 'r', encoding='utf-8') as f:
             content = json.load(f)
         content_index = build_content_index(content)
+
+    overrides = {}
+    if args.overrides:
+        override_path = Path(args.overrides)
+        if override_path.exists():
+            with open(override_path, 'r', encoding='utf-8') as f:
+                overrides = json.load(f)
+        else:
+            print(f"⚠ Overrides file not found: {args.overrides} (continuing without overrides)")
     
     with open(args.types, 'r', encoding='utf-8') as f:
         chart_types = json.load(f)
@@ -364,7 +374,15 @@ def main():
     for i, slide in enumerate(slides):
         slide_id = f"slide_{i+1}"
         chart_type = chart_types.get(slide_id, 'none')
-        visual = slide.get('visual', {})
+        visual = dict(slide.get('visual', {}))
+        slide_override = overrides.get(slide_id, {}) if isinstance(overrides, dict) else {}
+        if isinstance(slide_override, dict):
+            visual.update({
+                key: value
+                for key, value in slide_override.items()
+                if key in {'source_file', 'x_key', 'y_key', 'series_key', 'data_file'}
+            })
+            chart_type = slide_override.get('chart_type', chart_type)
 
         if chart_type == 'none':
             continue

@@ -1,0 +1,9 @@
+{
+  "slide_1": {
+    "chart_type": "bar",
+    "source_file": "school-metrics.csv",
+    "x_key": "term",
+    "y_key": "attendance",
+    "data_file": "chart_1_override.json"
+  }
+}
