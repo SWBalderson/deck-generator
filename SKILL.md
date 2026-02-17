@@ -63,6 +63,10 @@ Ask user via AskUserQuestion:
    - Options: "PDF", "PPTX", "SPA (web)", "All formats (recommended)"
    - header: "Export"
 
+9. **Audience Mode**: "Who is the primary audience?"
+   - Options: "Board", "Staff", "Parents", "Mixed"
+   - header: "Audience"
+
 ### Step 1: Check Dependencies
 
 Verify required dependencies are installed:
@@ -94,6 +98,9 @@ Supports: PDF, DOCX, PPTX, XLSX, CSV, JSON, MD, TXT, HTML
 Stop on first error.
 
 ### Step 3: Analyze Content
+
+Run helper (optional, recommended):
+`python scripts/analyze_content.py --content .temp/content.json --audience [board|staff|parents|mixed] --output .temp/analysis_request.json`
 
 Pass content.json to LLM:
 

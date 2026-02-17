@@ -95,6 +95,21 @@ assets/themes-local/my-brand/uno.config.ts
 
 Then run the skill and choose **Local theme by name** with `my-brand`.
 
+## Audience Modes
+
+Tune deck tone and detail for the primary audience:
+
+- `board` - strategic implications, risk, and governance decisions
+- `staff` - implementation detail and operational ownership
+- `parents` - plain-language outcomes and wellbeing impact
+- `mixed` - balanced strategic and practical framing
+
+Helper script example:
+
+```bash
+python scripts/analyze_content.py --content .temp/content.json --audience board --output .temp/analysis_request.json
+```
+
 ### Manual Local Theme Format
 
 If you prefer manual setup, create these files directly:

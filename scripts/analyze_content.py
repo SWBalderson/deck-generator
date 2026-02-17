@@ -7,10 +7,32 @@ import argparse
 import json
 
 
+AUDIENCE_GUIDANCE = {
+    'board': (
+        'Audience mode: board. Prioritise strategic implications, risk, governance decisions, and concise evidence for trustees/governors.'
+    ),
+    'staff': (
+        'Audience mode: staff. Prioritise implementation detail, practical classroom/operational implications, and clear ownership of actions.'
+    ),
+    'parents': (
+        'Audience mode: parents. Prioritise learner outcomes, wellbeing, transparency, and plain-language explanation of decisions and impact.'
+    ),
+    'mixed': (
+        'Audience mode: mixed. Balance strategic clarity with practical implications, avoiding jargon while retaining evidence-led recommendations.'
+    ),
+}
+
+
 def main():
     parser = argparse.ArgumentParser(description='Prepare content analysis')
     parser.add_argument('--content', required=True, help='Path to content.json')
     parser.add_argument('--output', required=True, help='Path to output analysis_request.json')
+    parser.add_argument(
+        '--audience',
+        default='board',
+        choices=sorted(AUDIENCE_GUIDANCE.keys()),
+        help='Audience mode to tune tone and detail (default: board)',
+    )
     args = parser.parse_args()
     
     with open(args.content, 'r', encoding='utf-8') as f:
@@ -19,6 +41,7 @@ def main():
     # Prepare request for LLM
     analysis_request = {
         'documents': content,
+        'audience_mode': args.audience,
         'instruction': """
         Analyze these documents and create a presentation structure.
         
@@ -61,6 +84,8 @@ def main():
         - Follow MECE structure for problem decomposition
         - Cite sources from the documents
         """
+        + "\n\n"
+        + AUDIENCE_GUIDANCE[args.audience]
     }
     
     with open(args.output, 'w', encoding='utf-8') as f:

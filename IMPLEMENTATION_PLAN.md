@@ -128,7 +128,7 @@ Status: Active
 
 ### Tasks
 
-- [ ] **P4.1 Audience modes**
+- [x] **P4.1 Audience modes**
   - Support modes like `board`, `staff`, `parents` to tune tone/detail.
 - [ ] **P4.2 Speaker notes**
   - Generate concise presenter notes per slide.
@@ -188,6 +188,7 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P3.2 validation script - Added `scripts/validate_analysis.py` and integrated validation into build/export helpers.
 - 2026-02-17 - (pending commit) - Completed P3.3 slide quality lints - Added `scripts/lint_slides.py` with optional strict mode and build integration.
 - 2026-02-17 - (pending commit) - Completed P3.4 error handling cleanup - Replaced broad `except:` usage and improved actionable fallback diagnostics.
+- 2026-02-17 - (pending commit) - Completed P4.1 audience modes - Added audience-aware analysis helper options and documentation for board/staff/parents/mixed modes.
 
 ---
 
@@ -195,4 +196,4 @@ Use this format:
 
 - [x] Add strict/warn modes for validation and lint outputs.
 - [x] Review remaining scripts for typed exception handling and actionable errors.
-- [ ] Start **P4.1 Audience modes** design and prompt contract updates.
+- [ ] Start **P4.2 Speaker notes** generation workflow.
