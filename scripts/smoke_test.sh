@@ -5,6 +5,16 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 WORK_DIR="${1:-$ROOT_DIR/.temp/smoke}"
 DECK_DIR="$WORK_DIR/smoke_deck"
 
+if [[ -n "${VIRTUAL_ENV:-}" && -x "$VIRTUAL_ENV/bin/python3" ]]; then
+  PYTHON_BIN="$VIRTUAL_ENV/bin/python3"
+elif [[ -x "$ROOT_DIR/.venv/bin/python3" ]]; then
+  PYTHON_BIN="$ROOT_DIR/.venv/bin/python3"
+elif [[ -x "$ROOT_DIR/../../../.venv/bin/python3" ]]; then
+  PYTHON_BIN="$ROOT_DIR/../../../.venv/bin/python3"
+else
+  PYTHON_BIN="python3"
+fi
+
 CONTENT_JSON="$WORK_DIR/content.json"
 ANALYSIS_REQUEST_JSON="$WORK_DIR/analysis_request.json"
 ANALYSIS_JSON="$WORK_DIR/analysis.json"
@@ -12,8 +22,9 @@ CHART_TYPES_JSON="$WORK_DIR/chart-types.json"
 
 echo "[smoke] root: $ROOT_DIR"
 echo "[smoke] work: $WORK_DIR"
+echo "[smoke] python: $PYTHON_BIN"
 
-python3 - <<'PY'
+"$PYTHON_BIN" - <<'PY'
 import importlib.util
 import sys
 
@@ -35,41 +46,41 @@ mkdir -p "$WORK_DIR"
 
 cp "$ROOT_DIR/examples/fixtures/smoke-analysis.json" "$ANALYSIS_JSON"
 
-python3 "$ROOT_DIR/scripts/ingest_documents.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/ingest_documents.py" \
   --files \
   "$ROOT_DIR/examples/demo-presentation/source_docs/q4_strategy_brief.md" \
   "$ROOT_DIR/examples/demo-presentation/source_docs/market_data.csv" \
   --output "$CONTENT_JSON"
 
-python3 "$ROOT_DIR/scripts/analyze_content.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/analyze_content.py" \
   --content "$CONTENT_JSON" \
   --audience mixed \
   --output "$ANALYSIS_REQUEST_JSON"
 
-python3 "$ROOT_DIR/scripts/detect_chart_type.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/detect_chart_type.py" \
   --analysis "$ANALYSIS_JSON" \
   --content "$CONTENT_JSON" \
   --output "$CHART_TYPES_JSON"
 
-python3 "$ROOT_DIR/scripts/create_slidev_project.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/create_slidev_project.py" \
   --theme consulting \
   --output "$DECK_DIR"
 
-python3 "$ROOT_DIR/scripts/generate_charts.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/generate_charts.py" \
   --analysis "$ANALYSIS_JSON" \
   --types "$CHART_TYPES_JSON" \
   --content "$CONTENT_JSON" \
   --output "$DECK_DIR/public/data" \
   --theme consulting
 
-python3 "$ROOT_DIR/scripts/build_slides.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/build_slides.py" \
   --analysis "$ANALYSIS_JSON" \
   --template "$ROOT_DIR/templates/slides.md.jinja2" \
   --output "$DECK_DIR/slides.md" \
   --deck-dir "$DECK_DIR" \
   --lint
 
-python3 "$ROOT_DIR/scripts/export_deck.py" \
+"$PYTHON_BIN" "$ROOT_DIR/scripts/export_deck.py" \
   --deck-dir "$DECK_DIR" \
   --analysis "$ANALYSIS_JSON" \
   --formats spa \
