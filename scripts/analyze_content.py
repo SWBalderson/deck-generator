@@ -41,7 +41,11 @@ def main():
             "visual": {
                 "type": "chart|image|none",
                 "chart_type": "bar|line|pie|waterfall|none",
-                "data_file": "chart_N.json (if chart)",
+                "data_file": "chart_N.json (if chart; output config filename)",
+                "source_file": "source filename containing chart data (if chart)",
+                "x_key": "column/key name for x-axis (if chart)",
+                "y_key": "column/key name for y-axis (if chart)",
+                "series_key": "optional group/series column (if chart)",
                 "filename": "slide-NN.png (if image)"
             },
             "source": "Source citation"
@@ -53,6 +57,7 @@ def main():
         - 3-5 bullet points per content slide
         - Bold the key phrase in each bullet
         - Include data visualizations where data exists
+        - When proposing a chart, map it to concrete source fields (`source_file`, `x_key`, `y_key`)
         - Follow MECE structure for problem decomposition
         - Cite sources from the documents
         """

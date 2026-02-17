@@ -65,7 +65,7 @@ Status: Active
 
 ### Tasks
 
-- [ ] **P2.1 Analysis data contract**
+- [x] **P2.1 Analysis data contract**
   - Define and document chart mapping fields in `analysis.json` (for example `data_file`, `x_key`, `y_key`, `series_key`).
 - [ ] **P2.2 Data-based type detection**
   - Refactor `scripts/detect_chart_type.py` to load and inspect real datasets where available.
@@ -180,11 +180,12 @@ Use this format:
 - 2026-02-17 - (pending commit) - Completed P1.2 docs/workflow consistency - SKILL and README now match project creation + git initialisation behaviour.
 - 2026-02-17 - (pending commit) - Completed P1.3 colour propagation - `--colors` now applies to copied theme files and chart generation palettes.
 - 2026-02-17 - (pending commit) - Completed P1.4 logo fallback paths - Deck logo now resolves from `public/logo.*` and `public/images/logo.*`.
+- 2026-02-17 - (pending commit) - Completed P2.1 analysis data contract - Added `source_file`/`x_key`/`y_key`/`series_key` guidance for charted slides.
 
 ---
 
 ## Current next actions
 
 - [ ] Start **P1.3 Colour propagation** in project and chart generation scripts.
-- [ ] Start **P2.1 Analysis data contract** in docs and analysis JSON schema fields.
-- [ ] Plan fixture expansion for data-based detection in **P2.2**.
+- [ ] Start **P2.2 Data-based type detection** in `scripts/detect_chart_type.py`.
+- [ ] Expand fixtures to cover timeseries/composition/waterfall shape detection.

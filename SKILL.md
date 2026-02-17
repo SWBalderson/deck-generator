@@ -109,7 +109,8 @@ For each slide, provide:
 - Action title (complete sentence stating the main message)
 - 3-5 bullet points with bold key phrases
 - Chart type recommendation (or 'none')
-- Data file reference (if applicable)
+- Data mapping fields when charted: `source_file`, `x_key`, `y_key`, optional `series_key`
+- Data file reference for generated chart config (`data_file`, e.g. `chart_N.json`)
 - MidJourney prompt concept
 - Source citations
 

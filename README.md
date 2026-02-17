@@ -178,3 +178,13 @@ Use these fixtures to validate chart rendering compatibility:
 
 - `examples/fixtures/chart-data-only.json` - legacy data-only shape
 - `examples/fixtures/chart-full-config.json` - full Chart.js config shape
+
+## Analysis Chart Mapping Contract
+
+When a slide requests a chart, include these fields in `slide.visual`:
+
+- `source_file`: source dataset filename from ingestion
+- `x_key`: column/key for x-axis labels
+- `y_key`: column/key for values
+- `series_key` (optional): grouping field for multi-series charts
+- `data_file`: generated chart config output (for example `chart_5.json`)
