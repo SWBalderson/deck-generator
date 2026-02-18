@@ -13,14 +13,14 @@ Goal: make `deck-generator` runnable from OpenCode, Claude Code, Codex CLI, Curs
 - [x] Add JSON schema for pipeline inputs (`schemas/pipeline-config.schema.json`).
 - [x] Define required fields, defaults, optional paths, and execution controls.
 - [x] Include strict validation guidance and machine-readable constraints.
-- [ ] End state for this item: committed to git.
+- [x] End state for this item: committed to git.
 
 ## Item 3 - Implement single orchestration entrypoint
 
-- [ ] Add `scripts/run_pipeline.py` to orchestrate existing scripts.
-- [ ] Support non-interactive config-driven runs.
-- [ ] Support step range execution (`--from-step`, `--to-step`) and dry-run visibility.
-- [ ] Add clear actionable errors for missing prerequisites (for example missing `analysis.json`).
+- [x] Add `scripts/run_pipeline.py` to orchestrate existing scripts.
+- [x] Support non-interactive config-driven runs.
+- [x] Support step range execution (`--from-step`, `--to-step`) and dry-run visibility.
+- [x] Add clear actionable errors for missing prerequisites (for example missing `analysis.json`).
 - [ ] End state for this item: committed to git.
 
 ## Item 4 - Add cross-tool adapter templates
