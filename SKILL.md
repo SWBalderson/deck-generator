@@ -23,64 +23,292 @@ Create professional consulting-style presentation decks from your documents.
 
 ## Workflow
 
-This skill is the OpenCode adapter over a shared, host-neutral pipeline.
+### Step 0: Gather Parameters
 
-### Step 0: Collect Parameters
+Ask user via AskUserQuestion:
 
-Collect required inputs in the host tool, then write a pipeline config JSON that matches:
+1. **Project Name**: "What would you like to name this presentation?"
+   - Text input, used for folder naming
+   - header: "Project Name"
 
-- `schemas/pipeline-config.schema.json`
+2. **Theme**: "Which theme would you like to use?"
+   - Options: "Consulting (default)", "Local theme by name", "Custom (specify colors)"
+   - header: "Theme"
 
-Required inputs:
+   If user chooses "Local theme by name", ask:
+   - "Enter local theme name (folder name under assets/themes-local/)"
+   - header: "Local Theme"
 
-1. `project_name`
-2. `title`
-3. `source_files` (array)
-4. `output_root`
+3. **Colors** (if custom): "Specify primary and secondary colors"
+   - Options: "Primary hex color", "Secondary hex color"
+   - header: "Colors"
 
-Common optional inputs:
+4. **Logo**: "Path to your logo file (SVG recommended)"
+   - Options: "Skip for now", "Custom SVG path"
+   - header: "Logo"
 
-- `theme`, `colors`, `logo_path`
-- `subtitle`, `author`, `audience`
-- `analysis_path` (required for detect/build/export stages)
-- `export_formats`, `export_base`
-- `execution` controls (`from_step`, `to_step`, `dry_run`, `git_mode`, lint toggles)
+5. **Document Files**: "Which documents should be included?"
+   - Options: List all files in source_docs/ for multi-select
+   - header: "Documents"
 
-### Step 1: Run Shared Pipeline
+6. **Presentation Title**: "What is the presentation title?"
+   - Text input
+   - header: "Title"
 
-Run the same core command used by all adapters:
+7. **Subtitle/Author**: "Subtitle and author (optional)"
+   - Text input
+   - header: "Metadata"
 
+8. **Output Formats**: "Which export formats?"
+   - Options: "PDF", "PPTX", "SPA (web)", "All formats (recommended)"
+   - header: "Export"
+
+9. **Audience Mode**: "Who is the primary audience?"
+   - Options: "Board", "Staff", "Parents", "Mixed"
+   - header: "Audience"
+
+### Step 1: Check Dependencies
+
+Verify required dependencies are installed:
 ```bash
-python scripts/run_pipeline.py --config path/to/deck.config.json
+python3 --version  # >= 3.8
+node --version     # >= 18
+pip list | grep -E "docling|pandas|Pillow|Jinja2"
 ```
 
-Partial rerun examples:
-
+If missing, prompt user to install:
 ```bash
-python scripts/run_pipeline.py --config path/to/deck.config.json --from-step build --to-step export
-python scripts/run_pipeline.py --config path/to/deck.config.json --dry-run
+pip install docling pandas Pillow Jinja2
+npm install -g @slidev/cli
 ```
 
-### Step 2: Analysis Handoff
+Before exporting any deck to PDF/PPTX, ensure Playwright Chromium is installed in that deck project:
 
-The pipeline generates `analysis_request.json` from source files. Use your preferred LLM to produce `analysis.json`, then set `analysis_path` in config and rerun from `detect` onward.
+```bash
+cd [deck_dir]
+npm install -D playwright-chromium
+```
 
-### Step 3: Exports and Git Policy
+### Step 2: Ingest Documents
 
-- Exports are controlled via `export_formats` (`pdf`, `pptx`, `spa`).
-- Git behavior is controlled by `execution.git_mode`:
-  - `manual` (default)
-  - `auto`
-  - `off`
+Run: `python scripts/ingest_documents.py --files [file_list] --output .temp/content.json`
 
-### Step 4: Tool-specific Adapters
+Supports: PDF, DOCX, PPTX, XLSX, CSV, JSON, MD, TXT, HTML
 
-See adapter templates:
+Stop on first error.
 
-- `adapters/opencode/README.md`
-- `adapters/claude/commands/deck-generate.md`
-- `adapters/cursor/commands/deck-generate.md`
-- `adapters/codex/README.md`
+### Step 3: Analyze Content
+
+Run helper (optional, recommended):
+`python scripts/analyze_content.py --content .temp/content.json --audience [board|staff|parents|mixed] --output .temp/analysis_request.json`
+
+Pass content.json to LLM:
+
+"Analyze these documents and create a presentation structure with:
+
+1. Executive summary slide
+2. Section dividers where appropriate
+3. Content slides with action titles (complete sentences)
+4. Data visualization slides where data is present
+5. Conclusion/next steps slide
+
+For each slide, provide:
+- Action title (complete sentence stating the main message)
+- 3-5 bullet points with bold key phrases
+- Chart type recommendation (or 'none')
+- Data mapping fields when charted: `source_file`, `x_key`, `y_key`, optional `series_key`
+- Data file reference for generated chart config (`data_file`, e.g. `chart_N.json`)
+- MidJourney prompt concept
+- Source citations
+
+Follow consulting best practices:
+- One message per slide
+- MECE structure where applicable
+- Pyramid principle (conclusion first)
+- Data-driven insights
+- Clear source attribution
+- Use British English spelling and grammar by default (for example: "organisation", "optimise", "programme", "analyse")"
+
+Return: structured JSON with slides array
+
+### Step 4: Detect Chart Types
+
+Run: `python scripts/detect_chart_type.py --analysis .temp/analysis.json --content .temp/content.json --overrides .temp/chart-overrides.json --output .temp/chart-types.json`
+
+Auto-detects:
+- Time series -> Line chart
+- Categorical comparison -> Bar chart
+- Composition -> Pie/Donut
+- Value changes -> Waterfall
+- Matrix data -> Bubble
+- Project timeline -> Gantt
+
+Stop on first error.
+
+### Step 5: Generate Charts
+
+Run: `python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --overrides .temp/chart-overrides.json --output [deck_dir]/public/data/ --theme [theme] --colors [colors]`
+
+Generates Chart.js configurations with:
+- Theme colors
+- Responsive sizing
+- Proper legends/labels
+- Data from ingested files
+
+Stop on first error.
+
+### Step 6: Generate Contextual MidJourney Prompts
+
+Run: `python scripts/generate_midjourney_prompts.py --analysis .temp/analysis.json --output [deck_dir]/midjourney-prompts.md --theme [theme]`
+
+**New: Content-Aware Prompt Generation**
+
+The prompt generator now analyzes each slide's content to create contextual visual prompts:
+
+- **Academic/Education slides** -> Library, scholarly, learning imagery
+- **Boarding/Residential slides** -> Campus, home, welcoming environments
+- **Performing Arts slides** -> Stage, theatre, musical instruments
+- **Strategy/Vision slides** -> Pathways, growth, forward-looking concepts
+- **Revenue/Financial slides** -> Growth, prosperity, business visualization
+- **Data/Analytics slides** -> Charts, networks, digital concepts
+- **Community slides** -> Connection, collaboration, shared spaces
+
+Each slide gets 3 prompt variations with different visual approaches.
+
+Stop on first error.
+
+### Step 7: Create Slidev Project
+
+Run: `python scripts/create_slidev_project.py --theme [theme] --colors [colors] --logo [logo] --output [deck_dir]/`
+
+Scaffolds:
+- Slidev project structure
+- Custom layouts and components
+- Theme CSS with selected colors
+- UnoCSS configuration
+- public/images/ folder (empty, ready for MidJourney images)
+- public/data/ folder (with chart JSONs)
+- Git repository initialised (`git init` + staged files)
+
+Stop on first error.
+
+### Step 8: Initialize Git Commit
+
+Run:
+```bash
+cd [deck_dir]
+# repository is already initialised by create_slidev_project.py
+# ensure all generated files are staged
+git add .
+git commit -m "Initial deck structure"
+```
+
+Stop on first error.
+
+### Step 9: Build Slides
+
+Run: `python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output [deck_dir]/slides.md --deck-dir [deck_dir]`
+
+Optional quality checks:
+- Add `--lint` to show warnings without blocking build
+- Add `--lint --lint-strict` to fail on lint warnings
+- Add `--consulting-lint --content .temp/content.json` for scored consulting-quality checks
+- Add `--consulting-lint --consulting-lint-strict --consulting-lint-threshold 70` to enforce quality gate
+
+Consulting-quality report output:
+- Build command writes `consulting-quality-report.json` next to `slides.md`
+- Report includes: `overall_score`, `overall_band`, `category_scores`, `blocking_issues`, `warnings`, `slide_findings`, `recommended_fixes`
+
+Consulting-quality score model (100 points):
+- `action_titles`: 25
+- `pyramid`: 20
+- `mece`: 20
+- `minimalist`: 15
+- `data_evidence`: 20
+
+Severity bands:
+- `90-100`: Excellent
+- `75-89`: Good
+- `60-74`: Needs refinement
+- `<60`: Rework recommended
+
+Generates complete slides.md with:
+- All slide content
+- Chart component references
+- **Auto-enabled images** (detects existing images in public/images/)
+- Source citations
+
+**New: Automatic Image Detection**
+
+The build script now checks for existing images in `public/images/`:
+- OK Images that exist are automatically enabled in the presentation
+- WARN Missing images are hidden (no broken image icons)
+- Just add your MidJourney images to the folder and rebuild
+
+Stop on first error.
+
+### Step 9b: Generate Speaker Notes (Optional)
+
+Run:
+`python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output [deck_dir]/speaker-notes.md`
+
+Use `--style detailed` when you want fuller presenter talking points.
+
+### Step 9c: Generate Citation Trace (Optional)
+
+Run:
+`python scripts/generate_citation_trace.py --analysis .temp/analysis.json --content .temp/content.json --output [deck_dir]/citation-trace.json`
+
+This produces per-bullet source excerpt matches to improve evidence traceability.
+
+### Step 9d: Run Consulting Quality Linter Directly (Optional)
+
+Run:
+`python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --report-out [deck_dir]/consulting-quality-report.json`
+
+Strict gate:
+`python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --strict --threshold 70`
+
+Optional traceability input:
+- Add `--citation-trace [deck_dir]/citation-trace.json` to factor citation matching into data/evidence scoring.
+
+### Step 10: Export
+
+Run:
+```bash
+cd [deck_dir]
+bunx slidev export --output [name].pdf --timeout 60000 --wait 1000
+bunx slidev export --format pptx --output [name].pptx --timeout 60000 --wait 1000
+bunx slidev build --out dist --base /
+```
+
+If Bun is unavailable, use `npx slidev ...` equivalents.
+
+If using the helper script, validate analysis during export:
+
+```bash
+python scripts/export_deck.py --deck-dir [deck_dir] --analysis .temp/analysis.json --formats pdf pptx spa
+```
+
+Important: for static hosting under a subpath, set `--base` to a path that starts and ends with `/` (example: `/talks/q4-review/`).
+
+Stop on first error.
+
+### Step 11: Commit
+
+Run:
+```bash
+cd [deck_dir]
+git add .
+git commit -m "[deck-generator] Initial presentation generation"
+```
+
+### Step 12: Cleanup
+
+Remove .temp/ folder:
+```bash
+rm -rf .temp/
+```
 
 ## Iterative Editing
 
