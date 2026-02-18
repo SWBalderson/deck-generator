@@ -6,39 +6,133 @@ Auto-detects existing images and enables them automatically.
 
 import argparse
 import json
-import subprocess
 import sys
 from pathlib import Path
 from jinja2 import Template
+
+from validate_analysis import validate_analysis_payload
+from lint_slides import lint_analysis as lint_slides_analysis
 
 
 def check_existing_images(slides: list, output_dir: Path) -> list:
     """Check which images exist and mark them for inclusion."""
     images_dir = output_dir / 'public' / 'images'
-    
+
     updated_slides = []
     for slide in slides:
         visual = slide.get('visual', {})
-        
-        # If slide has an image filename specified
+
         if visual.get('type') == 'image' and visual.get('filename'):
             image_path = images_dir / visual['filename']
-            
+
             if image_path.exists():
-                # Image exists - keep it enabled
                 print(f"  ✓ Found image: {visual['filename']}")
             else:
-                # Image doesn't exist - disable it but keep filename for reference
                 print(f"  ⚠ Missing image: {visual['filename']} (will be hidden)")
-                # Create a copy of visual with type set to none
                 visual = visual.copy()
                 visual['type'] = 'none'
                 slide = slide.copy()
                 slide['visual'] = visual
-        
+
         updated_slides.append(slide)
-    
+
     return updated_slides
+
+
+def build(
+    analysis_path: str,
+    template_path: str,
+    output_path: str,
+    deck_dir: str = None,
+    lint: bool = False,
+    lint_strict: bool = False,
+    consulting_lint: bool = False,
+    consulting_lint_strict: bool = False,
+    consulting_lint_threshold: int = 70,
+    content_path: str = None,
+    citation_trace_path: str = None,
+) -> None:
+    """Build slides.md from analysis + template. Callable from pipeline or CLI."""
+    with open(template_path, 'r', encoding='utf-8') as f:
+        template = Template(f.read())
+
+    with open(analysis_path, 'r', encoding='utf-8') as f:
+        analysis = json.load(f)
+
+    errors = validate_analysis_payload(analysis)
+    if errors:
+        msg = '✗ Analysis validation failed:\n' + '\n'.join(f'  - {e}' for e in errors)
+        print(msg, file=sys.stderr)
+        raise ValueError(msg)
+
+    if lint:
+        warnings = lint_slides_analysis(analysis)
+        if warnings:
+            print('⚠ Slide lint warnings:')
+            for item in warnings:
+                print(f'  - {item}')
+            if lint_strict:
+                raise ValueError('Slide lint failed in strict mode.')
+
+    if consulting_lint:
+        from lint_consulting_quality import lint_analysis as lint_cq, print_report
+        content_index = {}
+        if content_path:
+            with open(content_path, 'r', encoding='utf-8') as f:
+                from lint_consulting_quality import parse_content_index
+                content_index = parse_content_index(json.load(f))
+
+        citation_trace = {}
+        if citation_trace_path:
+            ct = Path(citation_trace_path)
+            if ct.exists():
+                with open(ct, 'r', encoding='utf-8') as f:
+                    citation_trace = json.load(f)
+
+        report = lint_cq(analysis, content_index, citation_trace, 0.6)
+        report_out = Path(output_path).parent / 'consulting-quality-report.json'
+        report_out.parent.mkdir(parents=True, exist_ok=True)
+        with open(report_out, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        print_report(report)
+
+        if consulting_lint_strict:
+            if report['blocking_issues']:
+                raise ValueError('Consulting lint failed: blocking issues detected.')
+            if report['overall_score'] < consulting_lint_threshold:
+                raise ValueError(
+                    f"Consulting lint failed: score {report['overall_score']} below threshold {consulting_lint_threshold}."
+                )
+
+    slides = analysis.get('slides', [])
+
+    if deck_dir:
+        output_dir = Path(deck_dir)
+        print(f"Checking for existing images in {output_dir}/public/images/...")
+        slides = check_existing_images(slides, output_dir)
+        print()
+
+    rendered = template.render(
+        title=analysis.get('title', 'Presentation'),
+        subtitle=analysis.get('subtitle', ''),
+        author=analysis.get('author', ''),
+        slides=slides,
+        theme=analysis.get('theme', 'consulting'),
+        primary_color='#003366',
+        secondary_color='#6699CC',
+    )
+
+    out = Path(output_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(rendered)
+
+    print(f"✓ Slides built: {output_path}")
+
+    image_count = sum(1 for s in slides if s.get('visual', {}).get('type') == 'image')
+    if image_count > 0:
+        print(f"✓ {image_count} image(s) enabled in presentation")
 
 
 def main():
@@ -55,94 +149,23 @@ def main():
     parser.add_argument('--content', help='Optional content.json path for consulting-lint evidence checks')
     parser.add_argument('--citation-trace', help='Optional citation-trace.json for consulting-lint trace checks')
     args = parser.parse_args()
-    
-    # Load template
-    with open(args.template, 'r', encoding='utf-8') as f:
-        template = Template(f.read())
-    
-    # Load analysis
-    with open(args.analysis, 'r', encoding='utf-8') as f:
-        analysis = json.load(f)
 
-    validator = Path(__file__).parent / 'validate_analysis.py'
-    validate_cmd = [sys.executable, str(validator), '--analysis', args.analysis]
-    validation = subprocess.run(validate_cmd, capture_output=True, text=True)
-    if validation.returncode != 0:
-        print(validation.stderr.strip(), file=sys.stderr)
+    try:
+        build(
+            analysis_path=args.analysis,
+            template_path=args.template,
+            output_path=args.output,
+            deck_dir=args.deck_dir,
+            lint=args.lint,
+            lint_strict=args.lint_strict,
+            consulting_lint=args.consulting_lint,
+            consulting_lint_strict=args.consulting_lint_strict,
+            consulting_lint_threshold=args.consulting_lint_threshold,
+            content_path=args.content,
+            citation_trace_path=args.citation_trace,
+        )
+    except ValueError:
         sys.exit(1)
-
-    if args.lint:
-        linter = Path(__file__).parent / 'lint_slides.py'
-        lint_cmd = [sys.executable, str(linter), '--analysis', args.analysis]
-        if args.lint_strict:
-            lint_cmd.append('--strict')
-        lint_result = subprocess.run(lint_cmd, capture_output=True, text=True)
-        if lint_result.stdout.strip():
-            print(lint_result.stdout.strip())
-        if lint_result.returncode != 0:
-            if lint_result.stderr.strip():
-                print(lint_result.stderr.strip(), file=sys.stderr)
-            sys.exit(1)
-
-    if args.consulting_lint:
-        consulting_linter = Path(__file__).parent / 'lint_consulting_quality.py'
-        report_out = Path(args.output).parent / 'consulting-quality-report.json'
-        consulting_cmd = [
-            sys.executable,
-            str(consulting_linter),
-            '--analysis',
-            args.analysis,
-            '--report-out',
-            str(report_out),
-        ]
-        if args.content:
-            consulting_cmd.extend(['--content', args.content])
-        if args.citation_trace:
-            consulting_cmd.extend(['--citation-trace', args.citation_trace])
-        if args.consulting_lint_strict:
-            consulting_cmd.extend(['--strict', '--threshold', str(args.consulting_lint_threshold)])
-
-        consulting_result = subprocess.run(consulting_cmd, capture_output=True, text=True)
-        if consulting_result.stdout.strip():
-            print(consulting_result.stdout.strip())
-        if consulting_result.returncode != 0:
-            if consulting_result.stderr.strip():
-                print(consulting_result.stderr.strip(), file=sys.stderr)
-            sys.exit(1)
-    
-    slides = analysis.get('slides', [])
-    
-    # Check for existing images if deck directory provided
-    if args.deck_dir:
-        output_dir = Path(args.deck_dir)
-        print(f"Checking for existing images in {output_dir}/public/images/...")
-        slides = check_existing_images(slides, output_dir)
-        print()
-    
-    # Render
-    rendered = template.render(
-        title=analysis.get('title', 'Presentation'),
-        subtitle=analysis.get('subtitle', ''),
-        author=analysis.get('author', ''),
-        slides=slides,
-        theme=analysis.get('theme', 'consulting'),
-        primary_color='#003366',
-        secondary_color='#6699CC'
-    )
-    
-    # Write output
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(rendered)
-    
-    print(f"✓ Slides built: {args.output}")
-    
-    # Count images
-    image_count = sum(1 for s in slides if s.get('visual', {}).get('type') == 'image')
-    if image_count > 0:
-        print(f"✓ {image_count} image(s) enabled in presentation")
 
 
 if __name__ == '__main__':

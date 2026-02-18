@@ -274,68 +274,69 @@ def chart_from_records(chart_type: str, records: List[Dict[str, Any]], visual: D
     return None
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Generate Chart.js configurations')
-    parser.add_argument('--analysis', required=True, help='Path to analysis.json')
-    parser.add_argument('--types', required=True, help='Path to chart-types.json')
-    parser.add_argument('--output', required=True, help='Output directory for chart configs')
-    parser.add_argument('--theme', default='consulting', help='Theme name')
-    parser.add_argument('--colors', help='Optional JSON colour overrides')
-    parser.add_argument('--content', help='Optional path to ingested content.json')
-    parser.add_argument('--overrides', help='Optional path to chart-overrides.json')
-    args = parser.parse_args()
+THEME_PALETTES = {
+    'consulting': {
+        'primary': '#003366',
+        'secondary': '#6699CC',
+        'accent': '#FF6B35',
+        'grid': '#E5E5E5',
+    },
+}
 
-    hex_re = re.compile(r'^#[0-9A-Fa-f]{6}$')
+HEX_COLOR_RE = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
-    def valid_color(value):
-        return isinstance(value, str) and bool(hex_re.match(value.strip()))
-    
-    # Load theme colors
-    themes = {
-        'consulting': {
-            'primary': '#003366',
-            'secondary': '#6699CC',
-            'accent': '#FF6B35',
-            'grid': '#E5E5E5'
-        }
-    }
-    colors = dict(themes.get(args.theme, themes['consulting']))
-    if args.colors:
+
+def resolve_colors(theme: str, colors_json: str = None) -> dict:
+    """Resolve chart colour palette from theme + optional JSON overrides."""
+    colors = dict(THEME_PALETTES.get(theme, THEME_PALETTES['consulting']))
+    if colors_json:
         try:
-            overrides = json.loads(args.colors)
+            overrides = json.loads(colors_json)
             for key in ['primary', 'secondary', 'accent', 'grid']:
-                if valid_color(overrides.get(key)):
-                    colors[key] = overrides[key].strip().upper()
+                val = overrides.get(key)
+                if isinstance(val, str) and HEX_COLOR_RE.match(val.strip()):
+                    colors[key] = val.strip().upper()
         except json.JSONDecodeError:
-            print('⚠ Invalid --colors JSON. Using theme defaults.')
-    
-    # Load analysis and chart types
-    with open(args.analysis, 'r', encoding='utf-8') as f:
+            print('⚠ Invalid colours JSON. Using theme defaults.')
+    return colors
+
+
+def generate_and_save(
+    analysis_path: str,
+    types_path: str,
+    content_path: str = None,
+    output_dir: str = '',
+    theme: str = 'consulting',
+    colors_json: str = None,
+    overrides_path: str = None,
+) -> None:
+    """Generate chart configs and write files. Callable from pipeline or CLI."""
+    colors = resolve_colors(theme, colors_json)
+
+    with open(analysis_path, 'r', encoding='utf-8') as f:
         analysis = json.load(f)
 
     content_index = {}
-    if args.content:
-        with open(args.content, 'r', encoding='utf-8') as f:
+    if content_path:
+        with open(content_path, 'r', encoding='utf-8') as f:
             content = json.load(f)
         content_index = build_content_index(content)
 
     overrides = {}
-    if args.overrides:
-        override_path = Path(args.overrides)
-        if override_path.exists():
-            with open(override_path, 'r', encoding='utf-8') as f:
+    if overrides_path:
+        op = Path(overrides_path)
+        if op.exists():
+            with open(op, 'r', encoding='utf-8') as f:
                 overrides = json.load(f)
         else:
-            print(f"⚠ Overrides file not found: {args.overrides} (continuing without overrides)")
-    
-    with open(args.types, 'r', encoding='utf-8') as f:
+            print(f"⚠ Overrides file not found: {overrides_path} (continuing without overrides)")
+
+    with open(types_path, 'r', encoding='utf-8') as f:
         chart_types = json.load(f)
-    
-    # Create output directory
-    output_dir = Path(args.output)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Generate charts
+
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+
     slides = analysis.get('slides', [])
     for i, slide in enumerate(slides):
         slide_id = f"slide_{i+1}"
@@ -362,49 +363,42 @@ def main():
         if records:
             config = chart_from_records(chart_type, records, visual, colors)
 
-        # Fallback to sample config if data is missing or mapping fails
         if config is None:
             if chart_type == 'line':
-                config = generate_line_chart(
-                    data=[1.8, 2.0, 2.2, 2.4],
-                    labels=['Q1', 'Q2', 'Q3', 'Q4'],
-                    dataset_label='Revenue (£M)',
-                    colors=colors
-                )
+                config = generate_line_chart([1.8, 2.0, 2.2, 2.4], ['Q1', 'Q2', 'Q3', 'Q4'], 'Revenue (£M)', colors)
             elif chart_type == 'bar':
-                config = generate_bar_chart(
-                    data=[15, 23, 18, 12, 8],
-                    labels=['UK', 'Germany', 'France', 'Netherlands', 'Other'],
-                    dataset_label='Market Share (%)',
-                    colors=colors
-                )
+                config = generate_bar_chart([15, 23, 18, 12, 8], ['UK', 'Germany', 'France', 'Netherlands', 'Other'], 'Market Share (%)', colors)
             elif chart_type == 'waterfall':
-                config = generate_waterfall_chart(
-                    data=[100, 15, -5, 10, 120],
-                    labels=['Baseline', 'Volume', 'Price', 'Mix', 'Final'],
-                    colors=colors
-                )
+                config = generate_waterfall_chart([100, 15, -5, 10, 120], ['Baseline', 'Volume', 'Price', 'Mix', 'Final'], colors)
             elif chart_type in ['pie', 'donut']:
-                config = generate_pie_chart(
-                    data=[35, 25, 20, 12, 8],
-                    labels=['Product A', 'Product B', 'Product C', 'Product D', 'Other'],
-                    colors=colors
-                )
+                config = generate_pie_chart([35, 25, 20, 12, 8], ['Product A', 'Product B', 'Product C', 'Product D', 'Other'], colors)
                 if chart_type == 'donut':
                     config['type'] = 'doughnut'
             else:
                 print(f"⚠ Unsupported chart type '{chart_type}' for {slide_id}; skipping")
                 continue
 
-        # Save config
         output_name = visual.get('data_file') or slide.get('data_file') or f"chart_{i+1}.json"
-        output_file = output_dir / output_name
+        output_file = out / output_name
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(config, f, indent=2)
-        
+
         print(f"✓ Generated: {output_file}")
-    
-    print(f"\n✓ All charts saved to: {args.output}")
+
+    print(f"\n✓ All charts saved to: {output_dir}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate Chart.js configurations')
+    parser.add_argument('--analysis', required=True, help='Path to analysis.json')
+    parser.add_argument('--types', required=True, help='Path to chart-types.json')
+    parser.add_argument('--output', required=True, help='Output directory for chart configs')
+    parser.add_argument('--theme', default='consulting', help='Theme name')
+    parser.add_argument('--colors', help='Optional JSON colour overrides')
+    parser.add_argument('--content', help='Optional path to ingested content.json')
+    parser.add_argument('--overrides', help='Optional path to chart-overrides.json')
+    args = parser.parse_args()
+    generate_and_save(args.analysis, args.types, args.content, args.output, args.theme, args.colors, args.overrides)
 
 
 if __name__ == '__main__':

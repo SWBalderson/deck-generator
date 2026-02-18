@@ -10,6 +10,9 @@ import sys
 from pathlib import Path
 from typing import List
 
+from validate_analysis import validate_analysis_payload
+from utils import load_json
+
 
 def resolve_slidev_runner() -> List[str]:
     """Resolve Slidev runner command from available tooling."""
@@ -30,7 +33,7 @@ def export_format(
     """Export to specific format."""
     output_name = deck_dir.name.replace('_deck', '')
     runner = resolve_slidev_runner()
-    
+
     if format_type == 'pdf':
         cmd = runner + [
             'export',
@@ -59,9 +62,9 @@ def export_format(
         cmd = runner + ['build', '--out', 'dist', '--base', base]
     else:
         raise ValueError(f"Unknown format: {format_type}")
-    
+
     try:
-        result = subprocess.run(cmd, cwd=deck_dir, check=True, capture_output=True, text=True)
+        subprocess.run(cmd, cwd=deck_dir, check=True, capture_output=True, text=True)
         print(f"✓ Exported {format_type.upper()}")
         return True
     except subprocess.CalledProcessError as e:
@@ -72,47 +75,61 @@ def export_format(
         return False
 
 
+def export_all(
+    deck_dir: str,
+    formats: List[str],
+    analysis_path: str = None,
+    base: str = '/',
+    timeout: int = 60000,
+    wait: int = 1000,
+) -> int:
+    """Export all requested formats. Callable from pipeline or CLI."""
+    dd = Path(deck_dir)
+
+    if not dd.exists():
+        print(f"✗ Deck directory not found: {dd}", file=sys.stderr)
+        raise FileNotFoundError(f"Deck directory not found: {dd}")
+
+    if analysis_path:
+        payload = load_json(Path(analysis_path))
+        errors = validate_analysis_payload(payload)
+        if errors:
+            msg = '✗ Analysis validation failed:\n' + '\n'.join(f'  - {e}' for e in errors)
+            print(msg, file=sys.stderr)
+            raise ValueError(msg)
+
+    success = []
+    failed = []
+
+    for fmt in formats:
+        if export_format(dd, fmt, timeout, wait, base):
+            success.append(fmt)
+        else:
+            failed.append(fmt)
+            break
+
+    if success:
+        print(f"\n✓ Exported: {', '.join(success)}")
+    if failed:
+        print(f"✗ Failed: {', '.join(failed)}")
+        return 1
+
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description='Export presentation')
     parser.add_argument('--deck-dir', required=True, help='Path to deck directory')
-    parser.add_argument('--formats', nargs='+', default=['pdf', 'pptx', 'spa'], 
+    parser.add_argument('--formats', nargs='+', default=['pdf', 'pptx', 'spa'],
                        help='Formats to export (pdf, pptx, spa)')
     parser.add_argument('--timeout', type=int, default=60000, help='Export timeout in ms')
     parser.add_argument('--wait', type=int, default=1000, help='Per-slide render wait in ms for export')
     parser.add_argument('--base', default='/', help="Base path for SPA build (must start and end with '/')")
     parser.add_argument('--analysis', help='Optional analysis.json path to validate before export')
     args = parser.parse_args()
-    
-    deck_dir = Path(args.deck_dir)
-    
-    if not deck_dir.exists():
-        print(f"✗ Deck directory not found: {deck_dir}", file=sys.stderr)
-        sys.exit(1)
 
-    if args.analysis:
-        validator = Path(__file__).parent / 'validate_analysis.py'
-        cmd = [sys.executable, str(validator), '--analysis', args.analysis]
-        validation = subprocess.run(cmd, capture_output=True, text=True)
-        if validation.returncode != 0:
-            print(validation.stderr.strip(), file=sys.stderr)
-            sys.exit(1)
-    
-    success = []
-    failed = []
-    
-    for fmt in args.formats:
-        if export_format(deck_dir, fmt, args.timeout, args.wait, args.base):
-            success.append(fmt)
-        else:
-            failed.append(fmt)
-            sys.exit(1)  # Stop on first error
-    
-    print(f"\n✓ Exported: {', '.join(success)}")
-    if failed:
-        print(f"✗ Failed: {', '.join(failed)}")
-        return 1
-    
-    return 0
+    rc = export_all(args.deck_dir, args.formats, args.analysis, args.base, args.timeout, args.wait)
+    return rc
 
 
 if __name__ == '__main__':

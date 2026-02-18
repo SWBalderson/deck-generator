@@ -109,35 +109,27 @@ def fallback_from_context(context: str) -> str:
     return 'bar'
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Auto-detect chart types')
-    parser.add_argument('--analysis', required=True, help='Path to analysis.json')
-    parser.add_argument('--content', help='Optional path to content.json from ingestion')
-    parser.add_argument('--overrides', help='Optional path to chart-overrides.json')
-    parser.add_argument('--output', required=True, help='Output chart-types.json')
-    args = parser.parse_args()
-    
-    with open(args.analysis, 'r', encoding='utf-8') as f:
+def detect_and_save(analysis_path: str, content_path: str = None, output_path: str = '', overrides_path: str = None) -> None:
+    """Detect chart types and write output. Callable from pipeline or CLI."""
+    with open(analysis_path, 'r', encoding='utf-8') as f:
         analysis = json.load(f)
 
     content_index = {}
-    if args.content:
-        with open(args.content, 'r', encoding='utf-8') as f:
+    if content_path:
+        with open(content_path, 'r', encoding='utf-8') as f:
             content = json.load(f)
         content_index = build_content_index(content)
 
     overrides = {}
-    if args.overrides:
-        override_path = Path(args.overrides)
-        if override_path.exists():
-            with open(override_path, 'r', encoding='utf-8') as f:
+    if overrides_path:
+        override_p = Path(overrides_path)
+        if override_p.exists():
+            with open(override_p, 'r', encoding='utf-8') as f:
                 overrides = json.load(f)
         else:
-            print(f"⚠ Overrides file not found: {args.overrides} (continuing without overrides)")
-    
+            print(f"⚠ Overrides file not found: {overrides_path} (continuing without overrides)")
+
     chart_types = {}
-    
-    # Detect chart type for each slide with data
     slides = analysis.get('slides', [])
     for i, slide in enumerate(slides):
         slide_id = f"slide_{i+1}"
@@ -159,11 +151,22 @@ def main():
                 chart_types[slide_id] = fallback_from_context(context)
         else:
             chart_types[slide_id] = 'none'
-    
-    with open(args.output, 'w', encoding='utf-8') as f:
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(chart_types, f, indent=2)
-    
-    print(f"✓ Chart types saved to: {args.output}")
+
+    print(f"✓ Chart types saved to: {output_path}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Auto-detect chart types')
+    parser.add_argument('--analysis', required=True, help='Path to analysis.json')
+    parser.add_argument('--content', help='Optional path to content.json from ingestion')
+    parser.add_argument('--overrides', help='Optional path to chart-overrides.json')
+    parser.add_argument('--output', required=True, help='Output chart-types.json')
+    args = parser.parse_args()
+    detect_and_save(args.analysis, args.content, args.output, args.overrides)
 
 
 if __name__ == '__main__':
