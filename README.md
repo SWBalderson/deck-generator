@@ -1,333 +1,204 @@
-# Deck Generator Skill
+# Deck Generator
 
-Professional consulting-style presentation generator using Slidev.
+Turn your documents into polished, consulting-style presentation decks — automatically.
+
+Feed in a collection of PDFs, spreadsheets, Word documents, or Markdown files and get back a complete [Slidev](https://sli.dev) presentation with data-driven charts, themed styling, MidJourney image prompts, speaker notes, and exports to PDF, PowerPoint, and the web.
+
+The skill works with any AI coding tool — Cursor, Claude Code, OpenCode, or Codex — through a shared Python pipeline and thin tool-specific adapters.
+
+## What It Does
+
+1. **Ingests your documents** — PDF, DOCX, PPTX, XLSX, CSV, JSON, Markdown, plain text.
+2. **Prepares an analysis request** — structured JSON ready for an LLM to propose slide titles, bullets, chart mappings, and layout choices.
+3. **Detects the right chart types** — analyses data shape and context to pick between bar, line, pie, waterfall, Gantt, or Harvey Balls.
+4. **Generates Chart.js configs** — maps source data to axes and applies your theme colours.
+5. **Scaffolds a Slidev project** — installs dependencies, copies your theme, logo, and Vue components.
+6. **Renders slides** — builds `slides.md` from a Jinja2 template, auto-enables any images you've placed in `public/images/`.
+7. **Exports** — PDF, PPTX, or a static web app (SPA).
+8. **Commits to git** — every generation is version-controlled so you can diff or rollback.
+
+Along the way it also produces **contextual MidJourney prompts**, **speaker notes**, a **citation trace** mapping bullets back to source excerpts, and a **consulting-quality score** based on action titles, pyramid structure, MECE, minimalism, and data evidence.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install docling pandas Pillow Jinja2
+# 1. Install Python dependencies
+pip install -r requirements.txt
+
+# 2. Install Slidev CLI
 npm install -g @slidev/cli
 
-# Run compatibility smoke check (schema + dry-run)
-./scripts/smoke_compat.sh
-```
-
-## Canonical Cross-Tool Workflow
-
-All tools should use the same core pipeline command:
-
-```bash
+# 3. Run the pipeline
 python scripts/run_pipeline.py --config path/to/deck.config.json
 ```
 
-Config contract:
-
-- `schemas/pipeline-config.schema.json`
-
-Starter config:
-
-- `examples/configs/cross-tool-minimal.json`
-
-Partial reruns:
+Or use the one-step installer that also copies adapter files for your tool of choice:
 
 ```bash
-python scripts/run_pipeline.py --config path/to/deck.config.json --from-step build --to-step export
-python scripts/run_pipeline.py --config path/to/deck.config.json --dry-run
+./scripts/install.sh --tool cursor --project-dir /path/to/your/project
 ```
 
-If your flow includes detect/build/export, provide `analysis_path` in config after generating `analysis.json` from `analysis_request.json`.
+## How the Pipeline Works
 
-## Tool Adapter Quickstarts
+Everything flows through a single command:
 
-- OpenCode: `adapters/opencode/README.md`
-- Claude Code: `adapters/claude/commands/deck-generate.md`
-- Cursor: `adapters/cursor/commands/deck-generate.md`
-- Codex CLI: `adapters/codex/README.md`
+```bash
+python scripts/run_pipeline.py --config deck.config.json
+```
 
-### Cursor command location
+The config file follows `schemas/pipeline-config.schema.json`. At minimum you need:
 
-Place project commands in `.cursor/commands/*.md` and invoke them with `/` in Cursor chat.
+| Field | Description |
+|-------|-------------|
+| `project_name` | Slug like `q4-results` |
+| `title` | Human-readable presentation title |
+| `source_files` | Array of document paths |
+| `output_root` | Directory where the deck folder is created |
 
-### Codex safety defaults
+The pipeline runs these steps in order:
 
-Use project-level `.codex/config.toml` with explicit approval and sandbox settings, for example:
+```
+ingest → analyse → detect → charts → project → build → export → commit → cleanup
+```
+
+After `analyse`, the pipeline produces `analysis_request.json`. You generate `analysis.json` from it using your preferred LLM, set `analysis_path` in config, then re-run from `detect`:
+
+```bash
+python scripts/run_pipeline.py --config deck.config.json --from-step detect
+```
+
+Other useful flags:
+
+```bash
+--from-step build --to-step export   # Partial re-run
+--dry-run                            # Print steps without executing
+```
+
+## Tool Support
+
+The core pipeline is tool-agnostic. Each AI coding tool gets a thin adapter that maps user input to the shared `run_pipeline.py` command.
+
+| Tool | Adapter Location | Setup |
+|------|-----------------|-------|
+| **Cursor** | `adapters/cursor/` | Copy command + skill to `.cursor/` |
+| **Claude Code** | `adapters/claude/` | Copy command to `.claude/commands/` |
+| **Codex** | `AGENTS.md` | Already discoverable at repo root |
+| **OpenCode** | `SKILL.md` | Already discoverable at skill root |
+
+The install script handles this automatically:
+
+```bash
+./scripts/install.sh --tool all --project-dir /path/to/project
+```
+
+For Codex, the recommended sandbox config is:
 
 ```toml
+# .codex/config.toml
 [permissions]
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 ```
 
-For PDF and PPTX export rendering, install Playwright Chromium in each generated deck project:
+## Charts
+
+The skill auto-detects the best chart type from your data, or you can override per-slide with a `chart-overrides.json` file.
+
+| Type | Best For |
+|------|----------|
+| Bar / Column | Categorical comparisons |
+| Line | Time-series trends |
+| Pie / Donut | Composition (up to 6 categories) |
+| Waterfall | Value changes and bridges |
+| Gantt | Project timelines |
+| Harvey Balls | Qualitative assessments |
+
+Chart mappings are driven by `visual.source_file`, `x_key`, `y_key`, and optional `series_key` fields in the analysis JSON. See `schemas/analysis.schema.json` for the full contract.
+
+## Themes
+
+The default theme is a professional consulting style (navy `#003366`, light blue `#6699CC`, accent `#FF6B35`). All colours are exposed as CSS variables — `--slide-primary`, `--slide-secondary`, `--slide-accent`, `--slide-text`, `--slide-text-light`, `--slide-grid` — so custom themes propagate automatically to charts and Vue components.
+
+### Custom Colours via Config
+
+Pass colour overrides directly in your pipeline config:
+
+```json
+{
+  "colors": {
+    "primary": "#0B2A4A",
+    "secondary": "#5B7C99",
+    "accent": "#D48A27"
+  }
+}
+```
+
+### Local / Private Themes
+
+For branding that shouldn't be committed to the repository:
 
 ```bash
-npm install -D playwright-chromium
+python scripts/create_local_theme.py --theme-name my-brand \
+  --primary '#0B2A4A' --secondary '#5B7C99' --accent '#D48A27'
 ```
 
-## Workflow
-
-1. Create config JSON matching `schemas/pipeline-config.schema.json`
-2. Run `python scripts/run_pipeline.py --config <config.json>`
-3. Generate `analysis.json` from `analysis_request.json` when required
-4. Re-run from `detect` onward once `analysis_path` is set
-5. Generate MidJourney images using provided prompts
-6. Place images in `public/images/`
-7. Rebuild/export (for example `--from-step build --to-step export`)
-
-## Chart Types Supported
-
-- **Bar/Column**: Categorical comparisons
-- **Line**: Time series trends
-- **Pie/Donut**: Composition (≤6 categories)
-- **Waterfall**: Value changes/decomposition
-- **Gantt**: Project timelines
-- **Bubble**: 2x2 matrices
-- **Harvey Balls**: Qualitative assessments
-
-## Theme System
-
-Default theme: Professional consulting (navy #003366, light blue #6699CC)
-
-Create custom themes for organisations/firms:
-- Colors auto-applied to all charts
-- Logo appears on every slide
-- Fonts customizable
-- CSS variables for easy overrides
-
-For custom colour overrides, pass JSON to both project scaffolding and chart generation:
-
-```bash
-python scripts/create_slidev_project.py --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}' --output my-deck
-python scripts/generate_charts.py --analysis .temp/analysis.json --types .temp/chart-types.json --content .temp/content.json --overrides .temp/chart-overrides.json --output my-deck/public/data --theme consulting --colors '{"primary":"#0B2A4A","secondary":"#5B7C99"}'
-```
-
-For local/private themes that should not be pushed to GitHub, use:
-
-```text
-assets/themes-local/<theme-name>/theme.css
-assets/themes-local/<theme-name>/uno.config.ts
-```
-
-Theme resolution order:
-1. `assets/themes/<theme-name>/`
-2. `assets/themes-local/<theme-name>/`
-3. fallback to `assets/themes/consulting/`
-
-### Create a Local Theme (Recommended)
-
-Use the helper script to scaffold a local theme quickly (interactive wizard):
-
-```bash
-python scripts/create_local_theme.py
-```
-
-Or non-interactively:
-
-```bash
-python scripts/create_local_theme.py \
-  --theme-name my-brand \
-  --primary '#0B2A4A' \
-  --secondary '#5B7C99' \
-  --accent '#D48A27'
-```
-
-This creates:
-
-```text
-assets/themes-local/my-brand/theme.css
-assets/themes-local/my-brand/uno.config.ts
-```
-
-Then run the skill and choose **Local theme by name** with `my-brand`.
+This scaffolds files under `assets/themes-local/my-brand/`, which is git-ignored. Theme resolution order: named theme → local theme → fallback to `consulting`.
 
 ## Audience Modes
 
-Tune deck tone and detail for the primary audience:
+Tune the tone and detail of the generated deck for its primary audience:
 
-- `board` - strategic implications, risk, and governance decisions
-- `staff` - implementation detail and operational ownership
-- `parents` - plain-language outcomes and wellbeing impact
-- `mixed` - balanced strategic and practical framing
+| Mode | Focus |
+|------|-------|
+| `board` | Strategic implications, risk, governance |
+| `staff` | Implementation detail, operational ownership |
+| `parents` | Plain-language outcomes, wellbeing impact |
+| `mixed` | Balanced strategic and practical framing |
 
-Helper script example:
+Set via `"audience": "board"` in your config.
+
+## Quality Assurance
+
+### Slide Linting
+
+Basic checks on title quality, bullet counts, and source citations. Enable in config:
+
+```json
+{ "execution": { "lint": true, "lint_strict": false } }
+```
+
+### Consulting-Quality Scoring
+
+A scored report (out of 100) based on five consulting principles:
+
+| Category | Weight | Checks |
+|----------|--------|--------|
+| Action titles | 25 | Complete sentences with verbs and conclusions |
+| Pyramid structure | 20 | Lead with the answer, support with evidence |
+| MECE | 20 | Mutually exclusive, collectively exhaustive slide topics |
+| Minimalism | 15 | 3–5 bullets per slide, no filler |
+| Data evidence | 20 | Charts linked to source data, citations present |
+
+Enable with `"consulting_lint": true` in the execution config. Score bands: 90+ Excellent, 75–89 Good, 60–74 Needs refinement, below 60 Rework recommended.
+
+### Citation Traceability
+
+Maps each slide bullet back to the source document excerpt it was drawn from:
 
 ```bash
-python scripts/analyze_content.py --content .temp/content.json --audience board --output .temp/analysis_request.json
+python scripts/generate_citation_trace.py \
+  --analysis .temp/analysis.json \
+  --content .temp/content.json \
+  --output citation-trace.json
 ```
 
-### Manual Local Theme Format
+## Iterative Editing
 
-If you prefer manual setup, create these files directly:
+After generating a deck, you can refine it without starting over:
 
-```text
-assets/themes-local/<theme-name>/theme.css
-assets/themes-local/<theme-name>/uno.config.ts
-```
-
-At minimum, define these CSS variables in `theme.css`:
-- `--slide-primary`
-- `--slide-secondary`
-- `--slide-accent`
-- `--slide-background`
-- `--slide-text`
-
-Important:
-- `assets/themes-local/*` is git-ignored (except docs placeholders), so private themes stay local.
-- If a local theme is missing required files, the skill falls back to `consulting`.
-
-## Directory Structure
-
-```
-{project}_deck/
-├── slides.md                    # Edit this file
-├── public/
-│   ├── images/                  # Add MidJourney images here
-│   └── data/                    # Chart data (auto-generated)
-├── components/                  # Vue components
-├── layouts/                     # Slide layouts
-├── styles/                      # Theme styles
-├── {project}.pdf                # PDF export
-├── {project}.pptx               # PowerPoint export
-├── dist/                        # Static web app
-└── midjourney-prompts.md        # Image prompts
-```
-
-## Git Integration
-
-Every presentation is automatically tracked in git:
-- Repository initialised and files staged on project creation
-- Initial commit after first full generation/export
-- Each regeneration creates a new commit
-- View history: `git log`
-- Rollback: `git checkout [commit]`
-
-## Tips
-
-- Use high-resolution logos (SVG preferred)
-- Logo autodetection supports both `public/logo.*` and `public/images/logo.*`
-- Generate images at 1920x1080 or larger
-- Keep source documents focused for better summaries
-- Use iterative editing to refine the story
-
-## Example Usage
-
-```bash
-# Create a presentation about Q4 results
-# Place files in source_docs/:
-#   - q4_strategy_brief.md
-#   - market_data.csv
-#   - competitor_analysis.pdf
-
-# Run skill - it will:
-# 1. Ask for project name (e.g., "q4-results")
-# 2. Ingest all documents
-# 3. Generate analysis and slide structure
-# 4. Create charts and prompts
-# 5. Export to all formats
-
-# Output: q4-results_deck/ folder with:
-# - q4-results.pdf
-# - q4-results.pptx
-# - dist/ (web version)
-# - midjourney-prompts.md
-```
-
-## Chart Fixtures
-
-Use these fixtures to validate chart rendering compatibility:
-
-- `examples/fixtures/chart-data-only.json` - legacy data-only shape
-- `examples/fixtures/chart-full-config.json` - full Chart.js config shape
-- `examples/fixtures/detect-timeseries.json` - expected detection: `line`
-- `examples/fixtures/detect-composition.json` - expected detection: `pie`/`donut`
-- `examples/fixtures/detect-waterfall.json` - expected detection: `waterfall`
-- `examples/fixtures/analysis-mapped-sample.json` + `content-mapped-sample.json` + `chart-types-mapped-sample.json` - source-to-chart mapping fixture
-- `examples/fixtures/chart-overrides-sample.json` - manual override fixture format
-
-## Validation
-
-Validate `analysis.json` before build/export:
-
-```bash
-python scripts/validate_analysis.py --analysis .temp/analysis.json
-```
-
-`scripts/build_slides.py` now runs this validation automatically.
-
-Optional quality linting:
-
-```bash
-python scripts/lint_slides.py --analysis .temp/analysis.json
-python scripts/lint_slides.py --analysis .temp/analysis.json --strict
-```
-
-Or run during build:
-
-```bash
-python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --lint
-python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --lint --lint-strict
-```
-
-Advanced consulting-quality linting (scored report):
-
-```bash
-python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --report-out .temp/consulting-quality-report.json
-python scripts/lint_consulting_quality.py --analysis .temp/analysis.json --content .temp/content.json --strict --threshold 70
-```
-
-Consulting-quality score model (100 points):
-
-- `action_titles`: 25
-- `pyramid`: 20
-- `mece`: 20
-- `minimalist`: 15
-- `data_evidence`: 20
-
-Severity bands:
-
-- `90-100`: Excellent
-- `75-89`: Good
-- `60-74`: Needs refinement
-- `<60`: Rework recommended
-
-The report JSON includes:
-
-- `overall_score`, `overall_band`
-- `category_scores`, `category_penalties`
-- `blocking_issues`, `warnings`
-- `slide_findings`
-- `recommended_fixes` (ranked by impact)
-
-Or run during build:
-
-```bash
-python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --consulting-lint --content .temp/content.json
-python scripts/build_slides.py --analysis .temp/analysis.json --template templates/slides.md.jinja2 --output slides.md --consulting-lint --consulting-lint-strict --consulting-lint-threshold 70 --content .temp/content.json
-```
-
-## Speaker Notes
-
-Generate presenter notes from analysis output:
-
-```bash
-python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output speaker-notes.md
-python scripts/generate_speaker_notes.py --analysis .temp/analysis.json --output speaker-notes.md --style detailed
-```
-
-## Citation Traceability
-
-Generate a bullet-to-source citation trace file:
-
-```bash
-python scripts/generate_citation_trace.py --analysis .temp/analysis.json --content .temp/content.json --output citation-trace.json
-```
-
-This creates slide-by-slide citation mappings with matched source excerpts where keyword overlap is sufficient.
-
-## Iterative Slide Controls
-
-Preserve locked slides and selectively regenerate only chosen slides:
+- **Lock slides** — protect specific slides from regeneration.
+- **Regenerate only** — target individual slides for re-generation.
+- **Merge** — combine new analysis with a base, respecting locks.
 
 ```bash
 python scripts/apply_iterative_controls.py \
@@ -339,64 +210,92 @@ python scripts/apply_iterative_controls.py \
   --regenerate-only 4
 ```
 
-Use `--unlock-slides` to remove locks.
+Then re-run the pipeline from `build` to pick up the changes.
 
-## Smoke Test
+## Output Structure
 
-Run an end-to-end smoke pipeline (ingest -> analyse helper -> detect -> chart -> build -> export SPA):
+```
+{project}_deck/
+├── slides.md                    Main presentation file
+├── public/
+│   ├── images/                  Drop MidJourney images here
+│   └── data/                    Auto-generated chart configs
+├── components/                  Vue slide components
+├── layouts/                     Slidev layouts
+├── styles/                      Theme CSS
+├── {project}.pdf                PDF export
+├── {project}.pptx               PowerPoint export
+├── dist/                        Static web app
+├── midjourney-prompts.md        Image generation prompts
+├── speaker-notes.md             Presenter notes
+└── consulting-quality-report.json  Quality score report
+```
+
+## Testing
+
+The project has three levels of testing:
 
 ```bash
+# Unit tests (93 tests, runs in <1s)
+python -m pytest tests/ -v
+
+# Fixture regression checks (chart detection, generation, validation, linting)
+python scripts/run_fixture_checks.py
+
+# End-to-end smoke test (full pipeline minus LLM)
 ./scripts/smoke_test.sh
 ```
 
-Optional custom work directory:
+CI runs all three on every push and pull request via `.github/workflows/ci.yml`.
 
-```bash
-./scripts/smoke_test.sh /tmp/deck-generator-smoke
-```
+## Recent Changes
 
-## Fixture Checks
+### Architecture Refactor
 
-Run fast fixture regressions:
+**Shared utilities module** — Duplicated functions (`build_content_index`, `extract_records`, `normalise_words`, `jaccard`, `to_float`, and others) have been extracted into `scripts/utils.py`. Five consumer scripts now import from this single module instead of maintaining their own copies.
 
-```bash
-python scripts/run_fixture_checks.py
-```
+**Direct function calls** — The pipeline orchestrator (`run_pipeline.py`) now imports and calls step functions in-process instead of spawning a new Python subprocess for each step. This eliminates 7 process spawns per full pipeline run, significantly reducing execution time. Validation and linting in `build_slides.py` also use direct imports rather than subprocess calls.
 
-CI runs both fixture checks and the smoke pipeline on push/PR via `.github/workflows/ci.yml`.
-Fixture checks include a strict consulting-quality linter pass on `examples/fixtures/consulting-quality-good.json`.
+**Lazy imports and converter reuse** — Heavy dependencies (`docling`, `pandas`) are now imported lazily inside the functions that need them, so importing the pipeline module is fast. The `DocumentConverter` is instantiated once and reused across all files during ingestion.
 
-To run the same strict gate locally:
+### Cross-Tool Compatibility
 
-```bash
-python scripts/lint_consulting_quality.py \
-  --analysis examples/fixtures/consulting-quality-good.json \
-  --content .temp/content.json \
-  --strict \
-  --threshold 70
-```
+**Cursor skill definition** — Added `adapters/cursor/skill/SKILL.md` with Cursor-friendly frontmatter and an improved command template that guides users through config creation.
 
-## Analysis Chart Mapping Contract
+**CLAUDE.md and AGENTS.md** — Added discovery files so Claude Code and Codex can find the skill and understand its workflow, sandbox requirements, and available scripts.
 
-When a slide requests a chart, include these fields in `slide.visual`:
+**Multi-tool install script** — `scripts/install.sh` automates dependency installation and adapter file placement for any supported tool.
 
-- `source_file`: source dataset filename from ingestion
-- `x_key`: column/key for x-axis labels
-- `y_key`: column/key for values
-- `series_key` (optional): grouping field for multi-series charts
-- `data_file`: generated chart config output (for example `chart_5.json`)
+### Quality and Testing
 
-Optional override file (`chart-overrides.json`) can force chart type and mapping by slide id:
+**Pytest suite** — 93 unit tests covering shared utilities, chart type detection, analysis validation (positive and negative cases), slide linting, consulting quality scoring, iterative controls, and speaker notes.
 
-```json
-{
-  "slide_3": {
-    "chart_type": "bar",
-    "source_file": "school-metrics.csv",
-    "x_key": "term",
-    "y_key": "attendance"
-  }
-}
-```
+**Negative test fixtures** — Validation tests now cover invalid payloads: missing fields, wrong types, charts without data files, images without filenames, and invalid visual types.
 
-Schema reference: `schemas/analysis.schema.json`
+**Requirements pinned** — `requirements.txt` with compatible version ranges for reproducible installs.
+
+### Component Improvements
+
+**CSS variable theming** — Hard-coded colour values in `DeckActionTitle`, `DeckSource`, `DeckHarveyBall`, `DeckWaterfall`, and the Jinja2 template have been replaced with CSS custom properties (`--slide-primary`, `--slide-secondary`, etc.) with sensible fallbacks. Custom themes now apply consistently everywhere.
+
+**DeckWaterfall error handling** — The waterfall chart component now validates fetch responses, checks for missing or mismatched data, and displays a styled error message instead of silently failing.
+
+**DeckLogo cleanup** — The logo candidate list has been trimmed from 20 entries to 8 (SVG and PNG only), and the component hides itself entirely when no logo resolves rather than leaving a broken image element.
+
+## Dependencies
+
+| Dependency | Purpose |
+|-----------|---------|
+| Python 3.8+ | Pipeline scripts |
+| Node.js 18+ | Slidev rendering and export |
+| [docling](https://github.com/DS4SD/docling) | PDF, DOCX, PPTX, HTML ingestion |
+| [pandas](https://pandas.pydata.org/) | CSV and tabular data processing |
+| [Pillow](https://python-pillow.org/) | Image optimisation |
+| [Jinja2](https://jinja.palletsprojects.com/) | Slide template rendering |
+| [pytest](https://docs.pytest.org/) | Unit testing |
+| [@slidev/cli](https://sli.dev/) | Presentation rendering and export |
+| playwright-chromium | PDF/PPTX export (per-deck install) |
+
+## Licence
+
+See repository root for licence terms.
