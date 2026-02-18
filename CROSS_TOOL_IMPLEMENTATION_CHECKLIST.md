@@ -28,13 +28,13 @@ Goal: make `deck-generator` runnable from OpenCode, Claude Code, Codex CLI, Curs
 - [x] Add adapter docs/templates for OpenCode, Claude Code, Cursor, and Codex.
 - [x] Ensure each adapter maps user input to the same config schema and runner command.
 - [x] Include practical command file locations where applicable (for example `.cursor/commands`).
-- [ ] End state for this item: committed to git.
+- [x] End state for this item: committed to git.
 
 ## Item 5 - Refactor skill docs to use shared runner
 
-- [ ] Update `SKILL.md` to use host-neutral execution core.
-- [ ] Remove hard coupling to OpenCode-only interaction semantics in workflow steps.
-- [ ] Keep OpenCode as an adapter, not the source of orchestration truth.
+- [x] Update `SKILL.md` to use host-neutral execution core.
+- [x] Remove hard coupling to OpenCode-only interaction semantics in workflow steps.
+- [x] Keep OpenCode as an adapter, not the source of orchestration truth.
 - [ ] End state for this item: committed to git.
 
 ## Item 6 - Add compatibility validation and CI-friendly smoke flow
