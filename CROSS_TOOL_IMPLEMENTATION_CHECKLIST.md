@@ -21,13 +21,13 @@ Goal: make `deck-generator` runnable from OpenCode, Claude Code, Codex CLI, Curs
 - [x] Support non-interactive config-driven runs.
 - [x] Support step range execution (`--from-step`, `--to-step`) and dry-run visibility.
 - [x] Add clear actionable errors for missing prerequisites (for example missing `analysis.json`).
-- [ ] End state for this item: committed to git.
+- [x] End state for this item: committed to git.
 
 ## Item 4 - Add cross-tool adapter templates
 
-- [ ] Add adapter docs/templates for OpenCode, Claude Code, Cursor, and Codex.
-- [ ] Ensure each adapter maps user input to the same config schema and runner command.
-- [ ] Include practical command file locations where applicable (for example `.cursor/commands`).
+- [x] Add adapter docs/templates for OpenCode, Claude Code, Cursor, and Codex.
+- [x] Ensure each adapter maps user input to the same config schema and runner command.
+- [x] Include practical command file locations where applicable (for example `.cursor/commands`).
 - [ ] End state for this item: committed to git.
 
 ## Item 5 - Refactor skill docs to use shared runner
