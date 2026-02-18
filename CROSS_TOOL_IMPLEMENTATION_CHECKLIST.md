@@ -35,13 +35,13 @@ Goal: make `deck-generator` runnable from OpenCode, Claude Code, Codex CLI, Curs
 - [x] Update `SKILL.md` to use host-neutral execution core.
 - [x] Remove hard coupling to OpenCode-only interaction semantics in workflow steps.
 - [x] Keep OpenCode as an adapter, not the source of orchestration truth.
-- [ ] End state for this item: committed to git.
+- [x] End state for this item: committed to git.
 
 ## Item 6 - Add compatibility validation and CI-friendly smoke flow
 
-- [ ] Add a compatibility smoke script that validates schema + pipeline dry run.
-- [ ] Add sample config(s) under `examples/configs/` for quick verification.
-- [ ] Document expected outputs and verification commands.
+- [x] Add a compatibility smoke script that validates schema + pipeline dry run.
+- [x] Add sample config(s) under `examples/configs/` for quick verification.
+- [x] Document expected outputs and verification commands.
 - [ ] End state for this item: committed to git.
 
 ## Item 7 - Update top-level documentation

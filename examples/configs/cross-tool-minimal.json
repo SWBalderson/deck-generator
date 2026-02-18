@@ -1,0 +1,28 @@
+{
+  "project_name": "cross-tool-demo",
+  "title": "Cross-Tool Demo Deck",
+  "subtitle": "Host-neutral pipeline example",
+  "author": "Deck Generator",
+  "theme": "consulting",
+  "audience": "mixed",
+  "output_root": "./.temp/compat-output",
+  "source_files": [
+    "../demo-presentation/source_docs/q4_strategy_brief.md",
+    "../demo-presentation/source_docs/market_data.csv"
+  ],
+  "export_formats": [
+    "spa"
+  ],
+  "execution": {
+    "from_step": "ingest",
+    "to_step": "analyze",
+    "dry_run": true,
+    "git_mode": "off",
+    "clean_temp": false,
+    "lint": true,
+    "lint_strict": false,
+    "consulting_lint": false,
+    "consulting_lint_strict": false,
+    "consulting_lint_threshold": 70
+  }
+}
