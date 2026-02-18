@@ -1,7 +1,28 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Testing
+.pytest_cache/
+
+# macOS
 .DS_Store
 
+# IDE
+.vscode/
+.idea/
+
+# Node (per-deck, not in skill root)
+node_modules/
+
+# Local/private themes
 assets/themes-local/*
 !assets/themes-local/.gitkeep
 !assets/themes-local/README.md
+
+# Generated deck output (if accidentally placed in skill root)
+*_deck/

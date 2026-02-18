@@ -428,4 +428,4 @@ CI runs all three on every push and pull request via `.github/workflows/ci.yml`.
 
 ## Licence
 
-See repository root for licence terms.
+MIT — see [LICENSE](LICENSE) for details.
