@@ -8,7 +8,7 @@
 .slide-title {
   font-family: Georgia, serif;
   font-size: 1.75rem;
-  color: #003366;
+  color: var(--slide-primary, #003366);
   margin-bottom: 1.5rem;
   line-height: 1.3;
   font-weight: 600;

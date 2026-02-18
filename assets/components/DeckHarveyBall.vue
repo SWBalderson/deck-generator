@@ -33,11 +33,11 @@ const props = defineProps({
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
-  border: 2px solid #6699CC;
+  border: 2px solid var(--slide-secondary, #6699CC);
 }
 
 .ball.filled {
-  background-color: #6699CC;
+  background-color: var(--slide-secondary, #6699CC);
 }
 
 .ball.empty {
@@ -47,6 +47,6 @@ const props = defineProps({
 .label {
   margin-left: 0.5rem;
   font-size: 0.9rem;
-  color: #333;
+  color: var(--slide-text, #333);
 }
 </style>

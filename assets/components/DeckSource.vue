@@ -10,7 +10,7 @@
   bottom: 1.5rem;
   right: 2rem;
   font-size: 0.75rem;
-  color: #666;
+  color: var(--slide-text-light, #666);
   font-style: italic;
 }
 </style>

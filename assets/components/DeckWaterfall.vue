@@ -29,7 +29,12 @@ onMounted(async () => {
     datasets: [{
       label: waterfallData.label || 'Value',
       data: waterfallData.values,
-      backgroundColor: waterfallData.values.map(v => v >= 0 ? '#003366' : '#FF6B35'),
+      backgroundColor: waterfallData.values.map(v => {
+        const style = getComputedStyle(document.documentElement)
+        return v >= 0
+          ? (style.getPropertyValue('--slide-primary').trim() || '#003366')
+          : (style.getPropertyValue('--slide-accent').trim() || '#FF6B35')
+      }),
       borderWidth: 0
     }]
   }
@@ -54,7 +59,7 @@ onMounted(async () => {
       },
       scales: {
         x: {
-          grid: { color: '#E5E5E5' },
+          grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--slide-grid').trim() || '#E5E5E5' },
           ticks: {
             callback: (val) => val >= 0 ? `+${val}` : val
           }
