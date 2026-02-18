@@ -42,11 +42,11 @@ Goal: make `deck-generator` runnable from OpenCode, Claude Code, Codex CLI, Curs
 - [x] Add a compatibility smoke script that validates schema + pipeline dry run.
 - [x] Add sample config(s) under `examples/configs/` for quick verification.
 - [x] Document expected outputs and verification commands.
-- [ ] End state for this item: committed to git.
+- [x] End state for this item: committed to git.
 
 ## Item 7 - Update top-level documentation
 
-- [ ] Update `README.md` with a canonical cross-tool workflow.
-- [ ] Add per-tool quickstart references to adapter templates.
-- [ ] Document Codex approval/sandbox and Cursor command-location considerations.
+- [x] Update `README.md` with a canonical cross-tool workflow.
+- [x] Add per-tool quickstart references to adapter templates.
+- [x] Document Codex approval/sandbox and Cursor command-location considerations.
 - [ ] End state for this item: committed to git.

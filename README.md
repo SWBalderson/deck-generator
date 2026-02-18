@@ -9,8 +9,54 @@ Professional consulting-style presentation generator using Slidev.
 pip install docling pandas Pillow Jinja2
 npm install -g @slidev/cli
 
-# Use the skill
-# (Skill will guide you through the process)
+# Run compatibility smoke check (schema + dry-run)
+./scripts/smoke_compat.sh
+```
+
+## Canonical Cross-Tool Workflow
+
+All tools should use the same core pipeline command:
+
+```bash
+python scripts/run_pipeline.py --config path/to/deck.config.json
+```
+
+Config contract:
+
+- `schemas/pipeline-config.schema.json`
+
+Starter config:
+
+- `examples/configs/cross-tool-minimal.json`
+
+Partial reruns:
+
+```bash
+python scripts/run_pipeline.py --config path/to/deck.config.json --from-step build --to-step export
+python scripts/run_pipeline.py --config path/to/deck.config.json --dry-run
+```
+
+If your flow includes detect/build/export, provide `analysis_path` in config after generating `analysis.json` from `analysis_request.json`.
+
+## Tool Adapter Quickstarts
+
+- OpenCode: `adapters/opencode/README.md`
+- Claude Code: `adapters/claude/commands/deck-generate.md`
+- Cursor: `adapters/cursor/commands/deck-generate.md`
+- Codex CLI: `adapters/codex/README.md`
+
+### Cursor command location
+
+Place project commands in `.cursor/commands/*.md` and invoke them with `/` in Cursor chat.
+
+### Codex safety defaults
+
+Use project-level `.codex/config.toml` with explicit approval and sandbox settings, for example:
+
+```toml
+[permissions]
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
 ```
 
 For PDF and PPTX export rendering, install Playwright Chromium in each generated deck project:
@@ -21,13 +67,13 @@ npm install -D playwright-chromium
 
 ## Workflow
 
-1. Place source documents in `source_docs/` folder
-2. Run skill and answer questions
-3. Skill creates a Slidev project (including `git init` and initial staging)
-4. Generate MidJourney images using provided prompts
-5. Place images in `public/images/`
-6. Rebuild slides (images are auto-detected)
-7. Re-export presentation
+1. Create config JSON matching `schemas/pipeline-config.schema.json`
+2. Run `python scripts/run_pipeline.py --config <config.json>`
+3. Generate `analysis.json` from `analysis_request.json` when required
+4. Re-run from `detect` onward once `analysis_path` is set
+5. Generate MidJourney images using provided prompts
+6. Place images in `public/images/`
+7. Rebuild/export (for example `--from-step build --to-step export`)
 
 ## Chart Types Supported
 
