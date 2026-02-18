@@ -5,14 +5,14 @@ Goal: make `deck-generator` runnable from OpenCode, Claude Code, Codex CLI, Curs
 ## Item 1 - Create canonical implementation checklist
 
 - [x] Add this checklist file with clear, commit-sized delivery items.
-- [ ] Keep this file updated as each item is completed.
-- [ ] End state for this item: committed to git.
+- [x] Keep this file updated as each item is completed.
+- [x] End state for this item: committed to git.
 
 ## Item 2 - Introduce host-neutral pipeline contract
 
-- [ ] Add JSON schema for pipeline inputs (`schemas/pipeline-config.schema.json`).
-- [ ] Define required fields, defaults, optional paths, and execution controls.
-- [ ] Include strict validation guidance and machine-readable constraints.
+- [x] Add JSON schema for pipeline inputs (`schemas/pipeline-config.schema.json`).
+- [x] Define required fields, defaults, optional paths, and execution controls.
+- [x] Include strict validation guidance and machine-readable constraints.
 - [ ] End state for this item: committed to git.
 
 ## Item 3 - Implement single orchestration entrypoint
