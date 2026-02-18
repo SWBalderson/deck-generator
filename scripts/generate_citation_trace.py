@@ -3,50 +3,15 @@
 
 import argparse
 import json
-import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-
-WORD_RE = re.compile(r"[A-Za-z][A-Za-z'-]{2,}")
-
-
-def normalise_words(text: str) -> List[str]:
-    words = [w.lower() for w in WORD_RE.findall(text or '')]
-    stop = {
-        'the', 'and', 'for', 'with', 'from', 'that', 'this', 'will', 'have', 'has', 'are', 'was', 'were',
-        'into', 'their', 'about', 'where', 'which', 'using', 'through', 'more', 'than', 'into'
-    }
-    return [w for w in words if w not in stop]
-
-
-def split_fragments(text: str) -> List[str]:
-    parts = re.split(r'(?<=[.!?])\s+|\n+', text or '')
-    return [p.strip() for p in parts if p and p.strip()]
-
-
-def source_lookup(contents: Dict[str, dict]) -> Dict[str, dict]:
-    idx = {}
-    for path, doc in contents.items():
-        idx[path] = doc
-        idx[Path(path).name] = doc
-        filename = doc.get('filename')
-        if isinstance(filename, str):
-            idx[filename] = doc
-    return idx
-
-
-def extract_source_text(doc: dict) -> str:
-    if not doc:
-        return ''
-    for key in ['content', 'text', 'markdown']:
-        value = doc.get(key)
-        if isinstance(value, str) and value.strip():
-            return value
-    data = doc.get('data')
-    if data is not None:
-        return json.dumps(data, ensure_ascii=False)
-    return ''
+from utils import (
+    build_content_index,
+    extract_source_text,
+    normalise_words,
+    split_fragments,
+)
 
 
 def best_excerpt(query: str, fragments: List[str]) -> Tuple[str, int]:
@@ -79,7 +44,7 @@ def main():
     with open(args.content, 'r', encoding='utf-8') as f:
         content = json.load(f)
 
-    idx = source_lookup(content.get('contents', {}))
+    idx = build_content_index(content)
     trace = {
         'title': analysis.get('title', 'Presentation'),
         'analysis_file': args.analysis,

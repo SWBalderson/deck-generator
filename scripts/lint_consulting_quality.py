@@ -9,6 +9,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+from utils import normalise_words, jaccard
+
 
 ACTION_VERB_RE = re.compile(
     r"\b(is|are|can|should|must|will|improves?|reduces?|enables?|drives?|shows?|demonstrates?|increases?|decreases?|delivers?|supports?|creates?|limits?)\b",
@@ -20,25 +22,6 @@ OUTCOME_RE = re.compile(
 )
 RECOMMEND_RE = re.compile(r"\b(should|recommend|next step|must|priority|action)\b", re.IGNORECASE)
 NUMERIC_RE = re.compile(r"\d|%|£|\$|€")
-WORD_RE = re.compile(r"[A-Za-z][A-Za-z'-]{2,}")
-
-
-def normalise_words(text: str) -> List[str]:
-    stop = {
-        'the', 'and', 'for', 'with', 'from', 'that', 'this', 'will', 'have', 'has', 'are', 'was', 'were',
-        'into', 'their', 'about', 'where', 'which', 'using', 'through', 'more', 'than', 'into', 'over',
-        'each', 'across', 'while', 'when', 'under', 'between', 'after', 'before'
-    }
-    return [w.lower() for w in WORD_RE.findall(text or '') if w.lower() not in stop]
-
-
-def jaccard(a: set, b: set) -> float:
-    if not a or not b:
-        return 0.0
-    union = a | b
-    if not union:
-        return 0.0
-    return len(a & b) / len(union)
 
 
 def parse_content_index(content_payload: dict) -> Dict[str, dict]:

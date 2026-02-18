@@ -9,6 +9,8 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List
 
+from utils import build_content_index, extract_records, to_float
+
 
 def generate_bar_chart(data, labels, dataset_label, colors):
     """Generate bar chart configuration."""
@@ -148,42 +150,6 @@ def generate_pie_chart(data, labels, colors):
             }
         }
     }
-
-
-def build_content_index(content: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
-    """Index ingested documents by both full path and basename."""
-    indexed = {}
-    for path, item in content.get('contents', {}).items():
-        indexed[path] = item
-        indexed[Path(path).name] = item
-    return indexed
-
-
-def extract_records(document: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Extract row records from ingested content payload."""
-    if not document:
-        return []
-    data = document.get('data')
-    if isinstance(data, list):
-        return [row for row in data if isinstance(row, dict)]
-    if isinstance(data, dict):
-        for value in data.values():
-            if isinstance(value, list) and value and isinstance(value[0], dict):
-                return value
-    return []
-
-
-def to_float(value):
-    """Convert value to float when possible."""
-    if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, str):
-        cleaned = value.replace(',', '').replace('%', '').strip()
-        try:
-            return float(cleaned)
-        except ValueError:
-            return None
-    return None
 
 
 def infer_keys(records: List[Dict[str, Any]], x_key=None, y_key=None):

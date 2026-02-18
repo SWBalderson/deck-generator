@@ -8,6 +8,8 @@ import json
 from typing import Dict, List, Any
 from pathlib import Path
 
+from utils import build_content_index, extract_records
+
 
 def is_time_series(data: List[Dict]) -> bool:
     """Check if data represents time series."""
@@ -105,32 +107,6 @@ def fallback_from_context(context: str) -> str:
     if any(word in context for word in ['comparison', 'vs', 'versus', 'ranking']):
         return 'bar'
     return 'bar'
-
-
-def build_content_index(content: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
-    """Index ingested documents by basename for lookup from source_file."""
-    indexed = {}
-    for path, item in content.get('contents', {}).items():
-        basename = Path(path).name
-        indexed[basename] = item
-        indexed[path] = item
-    return indexed
-
-
-def extract_records(document: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Extract tabular records from ingested document payload."""
-    if not document:
-        return []
-
-    if isinstance(document.get('data'), list):
-        return [r for r in document['data'] if isinstance(r, dict)]
-
-    if isinstance(document.get('data'), dict):
-        for value in document['data'].values():
-            if isinstance(value, list) and value and isinstance(value[0], dict):
-                return value
-
-    return []
 
 
 def main():
