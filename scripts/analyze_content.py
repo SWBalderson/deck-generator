@@ -24,19 +24,19 @@ AUDIENCE_GUIDANCE = {
 
 
 ANALYSIS_INSTRUCTION = """
-Analyze these documents and create a presentation structure.
+Analyse these documents and create a presentation structure.
 
 Create 6-10 slides covering:
 1. Title slide
-2. Executive Summary (key message upfront)
+2. Executive Summary (key message upfront — the pyramid principle: lead with the answer)
 3-7. Main content slides (one message per slide)
-8. Conclusions/Next Steps
+8. Conclusions/Next Steps (explicit recommendations or actions)
 9. Thank You (optional)
 
-For each slide, provide this structure:
+For each slide, provide this JSON structure:
 {
     "layout": "title|section|content|two-col|chart-full|end",
-    "title": "Action title - complete sentence stating the main message",
+    "title": "Action title — a complete sentence stating the slide's conclusion, ending with a period.",
     "subtitle": "Optional subtitle",
     "bullets": [
         {"main": "Bold key phrase", "detail": "Supporting explanation"},
@@ -52,18 +52,40 @@ For each slide, provide this structure:
         "series_key": "optional group/series column (if chart)",
         "filename": "slide-NN.png (if image)"
     },
-    "source": "Source citation"
+    "insight": "One-sentence takeaway from the chart (chart slides only)",
+    "source": "Source citation (required for every content, two-col, and chart-full slide)"
 }
 
-Guidelines:
-- Use action titles (complete sentences with conclusions)
-- One main message per slide
-- 3-5 bullet points per content slide
-- Bold the key phrase in each bullet
-- Include data visualizations where data exists
+## Presentation Principles (must follow)
+
+1. ACTION TITLES: Every content slide title must be a complete sentence containing a
+   decisive verb (improves, reduces, enables, drives, demonstrates, etc.) and ending
+   with a period. The title IS the slide's conclusion — not a topic label.
+   Bad:  "Revenue Overview"
+   Good: "Revenue grew 18% year-on-year, driven by new product lines."
+
+2. PYRAMID PRINCIPLE: Lead with the answer. Place the executive summary at position 2.
+   Within each slide, make the first bullet the strongest evidence for the headline claim.
+   Close the deck with explicit recommendations or next steps.
+
+3. MECE: Slides must be Mutually Exclusive and Collectively Exhaustive. Each slide
+   covers a distinct aspect of the argument. No two slides should substantially overlap.
+   Within a slide, bullets should not repeat each other.
+
+4. MINIMALIST DESIGN: 3-5 bullet points per content slide. Keep each bullet concise
+   (roughly 24 words or fewer). Total slide word count should stay below 120 words.
+   Move supporting detail into the "detail" field of the bullet or into speaker notes.
+
+5. DATA EVIDENCE: Every content, two-col, and chart-full slide must cite its source.
+   Chart slides must map to real data with complete metadata (source_file, x_key, y_key,
+   data_file). If the title contains a number, the body must contain supporting numerics.
+
+## Additional Guidelines
+
+- Include data visualisations where tabular data exists in the source documents
 - When proposing a chart, map it to concrete source fields (`source_file`, `x_key`, `y_key`)
-- Follow MECE structure for problem decomposition
-- Cite sources from the documents
+- Bold the key phrase in each bullet's "main" field
+- Quantify claims wherever the source data permits
 """
 
 
