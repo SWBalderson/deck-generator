@@ -100,6 +100,18 @@ approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 ```
 
+## Skill Authoring And Packaging
+
+This repository keeps `README.md` at repo root for human documentation.
+
+For Anthropic-style skill quality and distribution checks, see:
+
+- `references/skill-trigger-guidelines.md`
+- `references/skill-troubleshooting.md`
+- `references/skill-evaluation-matrix.md`
+- `references/distribution-packaging.md`
+- `references/release-checklist.md`
+
 ## Charts
 
 The skill auto-detects the best chart type from your data, or you can override per-slide with a `chart-overrides.json` file.

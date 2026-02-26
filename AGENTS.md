@@ -4,6 +4,27 @@ This project generates consulting-style presentation decks from document sources
 
 ## For AI Coding Agents (Codex, OpenCode, etc.)
 
+### Skill Authoring Standards
+
+When updating skill files in this repository, follow these conventions:
+
+1. **Trigger-first frontmatter**
+   - Description must include what the skill does and when it should be used.
+   - Include concrete trigger phrases users are likely to say.
+   - Include non-goals to reduce over-triggering.
+
+2. **Progressive disclosure**
+   - Keep `SKILL.md` focused on execution-critical workflow and guardrails.
+   - Move long-form background, evaluation, and deep troubleshooting to `references/`.
+   - Link reference docs from `SKILL.md`.
+
+3. **Operational troubleshooting**
+   - Include actionable playbooks for analyze handoff, export dependencies, validation failures, and git mode behavior.
+
+4. **Evaluation hygiene**
+   - Maintain a trigger matrix with should-trigger and should-not-trigger prompts.
+   - Maintain a baseline-vs-skill comparison template for regressions.
+
 ### Pipeline Entrypoint
 
 All operations go through the same command:

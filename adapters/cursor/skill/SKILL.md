@@ -1,44 +1,39 @@
 ---
 name: deck-generator
-description: Generate professional consulting-style presentation decks from multiple document sources. Includes document ingestion, auto-detect chart types, MidJourney prompts, image optimisation, and git tracking. Exports to PDF, PPTX, and SPA.
+description: Generate consulting-style decks from source documents using the shared pipeline. Use when users ask to create a presentation from files, regenerate specific slides, or export to pdf, pptx, or spa. Not for standalone image design requests.
+compatibility: cursor; requires Python 3.8+, Node.js 18+, filesystem write access, shell access, and network access for package installation.
+metadata:
+  author: deck-generator maintainers
+  version: 2.1.0
+  category: workflow-automation
+  support: ../../../AGENTS.md
 ---
 
-# Deck Generator
+# Deck Generator (Cursor)
 
-Create professional consulting-style presentation decks from your documents.
+Thin adapter for the shared deck pipeline.
 
-## Features
+## Required Inputs
 
-- **Multi-format Ingestion**: PDF, DOCX, PPTX, XLSX, CSV, JSON, MD, TXT
-- **Auto-detect Charts**: Automatically selects best chart type based on data
-- **Chart.js Plugins**: Waterfall, Gantt, Harvey Balls, and more
-- **Contextual MidJourney Prompts**: Analyses slide content for relevant visual prompts
-- **Image Optimisation**: Auto-resizes and optimises MidJourney images
-- **Git Tracking**: Automatic git initialisation and commits
-- **Custom Themes**: Customisable for any organisation or consulting firm
-- **Iterative Editing**: Regenerate specific slides or entire deck via prompts
-
-## Workflow
-
-This skill wraps a shared, host-neutral pipeline. All business logic lives in `scripts/`.
-
-### Step 0: Collect Parameters
-
-Collect these required inputs:
+Create a config JSON matching `schemas/pipeline-config.schema.json` with:
 
 1. `project_name`
 2. `title`
-3. `source_files` (array of file paths)
-4. `output_root` (directory for output)
+3. `source_files`
+4. `output_root`
 
-Plus optional inputs: `theme`, `colors`, `logo_path`, `subtitle`, `author`, `audience`, `analysis_path`, `export_formats`, `export_base`.
+## Core Commands
 
-Write a config JSON matching `schemas/pipeline-config.schema.json`.
-
-### Step 1: Run Pipeline
+Run full pipeline:
 
 ```bash
 python scripts/run_pipeline.py --config path/to/deck.config.json
+```
+
+Continue after `analyze`:
+
+```bash
+python scripts/run_pipeline.py --config path/to/deck.config.json --from-step detect
 ```
 
 Partial rerun:
@@ -47,40 +42,21 @@ Partial rerun:
 python scripts/run_pipeline.py --config path/to/deck.config.json --from-step build --to-step export
 ```
 
-### Step 2: Analysis Handoff
-
-The pipeline generates `analysis_request.json` from source files. Use the LLM to produce `analysis.json`, then set `analysis_path` in config and rerun from `detect` onward.
-
-### Step 3: Exports and Git
-
-- Exports controlled via `export_formats` (`pdf`, `pptx`, `spa`).
-- Git behaviour controlled by `execution.git_mode`: `manual` (default), `auto`, `off`.
-
 ## Cursor Command
 
-A ready-made command file is available at `adapters/cursor/commands/deck-generate.md`.
+Install command file from `adapters/cursor/commands/deck-generate.md`, then run:
 
-To install, copy it to your project:
+`/deck-generate path/to/deck.config.json`
 
-```bash
-mkdir -p .cursor/commands
-cp <skill-path>/adapters/cursor/commands/deck-generate.md .cursor/commands/
-```
+## Troubleshooting
 
-Then invoke with `/deck-generate path/to/deck.config.json` in Cursor chat.
+- If pipeline stops after `analyze`, provide `analysis_path` and rerun from `detect`.
+- If export fails, install `playwright-chromium` inside the deck directory.
+- If validation fails, run `python scripts/validate_analysis.py --analysis <analysis.json>`.
 
-## Dependencies
+## References
 
-**Python:** `pip install -r requirements.txt`
-**Node:** `npm install -g @slidev/cli`
-**Per-deck export:** `cd [deck_dir] && npm install -D playwright-chromium`
-
-## Output Files
-
-- `{project}_deck/slides.md` — Main presentation
-- `{project}_deck/public/images/` — User-populated image folder
-- `{project}_deck/public/data/` — Chart data files
-- `{project}_deck/{project}.pdf` — PDF export
-- `{project}_deck/{project}.pptx` — PowerPoint export
-- `{project}_deck/dist/` — Static web app
-- `{project}_deck/midjourney-prompts.md` — Image generation prompts
+- `../../../references/skill-trigger-guidelines.md`
+- `../../../references/skill-troubleshooting.md`
+- `../../../references/skill-evaluation-matrix.md`
+- `../../../references/distribution-packaging.md`
